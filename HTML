@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATCHDAY AI — FIFA World Cup 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1E2D;
+    --navy-2:#12293D;
+    --pitch:#1F8A52;
+    --pitch-bright:#2FB86B;
+    --amber:#F5A623;
+    --coral:#E8543E;
+    --chalk:#F4F6F2;
+    --steel:#2A3E4E;
+    --steel-line: rgba(244,246,242,0.12);
+    --text-dim: rgba(244,246,242,0.6);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--navy);
+    color:var(--chalk);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+
+  /* ---- Header / scoreboard ---- */
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid var(--steel-line);
+    padding-bottom:18px;margin-bottom:22px;flex-wrap:wrap;gap:14px;
+  }
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .brand h1{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;font-size:44px;letter-spacing:0.5px;margin:0;
+    line-height:0.9;
+  }
+  .brand span.tag{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);
+    letter-spacing:2px;text-transform:uppercase;
+  }
+  .clock{
+    font-family:'IBM Plex Mono',monospace;text-align:right;font-size:12px;color:var(--text-dim);
+  }
+  .clock b{color:var(--chalk);font-size:20px;display:block;letter-spacing:1px;}
+
+  /* ---- Tabs styled like gate numbers ---- */
+  .tabs{display:flex;gap:2px;margin-bottom:26px;background:var(--steel-line);border-radius:8px;overflow:hidden;}
+  .tab{
+    flex:1;text-align:center;padding:14px 10px;cursor:pointer;background:var(--navy-2);
+    font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;
+    letter-spacing:0.5px;color:var(--text-dim);position:relative;transition:background .25s, color .25s;
+    user-select:none;
+  }
+  .tab .gate{font-family:'IBM Plex Mono',monospace;font-size:11px;display:block;color:var(--amber);margin-bottom:4px;font-weight:400;letter-spacing:2px;}
+  .tab.active{background:var(--pitch);color:#fff;}
+  .tab.active .gate{color:rgba(255,255,255,0.85);}
+  .tab:hover:not(.active){background:#17303f;}
+
+  .panel{display:none;animation:fadeIn .35s ease;}
+  .panel.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---- Fan Companion ---- */
+  .fan-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:22px;}
+  @media (max-width:800px){.fan-grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--navy-2);border:1px solid var(--steel-line);border-radius:12px;padding:18px 20px;
+  }
+  .card h3{
+    font-family:'Big Shoulders Display',sans-serif;font-size:20px;margin:0 0 12px;font-weight:700;
+    display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);
+    margin:0 0 4px;
+  }
+
+  .lang-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .lang-chip{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 10px;border-radius:5px;
+    background:var(--steel);border:1px solid var(--steel-line);cursor:pointer;color:var(--text-dim);
+    transition:all .15s;
+  }
+  .lang-chip:hover{border-color:var(--amber);color:var(--chalk);}
+  .lang-chip.active{background:var(--amber);color:var(--navy);border-color:var(--amber);font-weight:600;}
+
+  .chat-window{
+    height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px 8px;
+  }
+  .bubble{max-width:80%;padding:10px 14px;border-radius:10px;font-size:14.5px;line-height:1.45;}
+  .bubble.fan{align-self:flex-end;background:var(--pitch);color:#fff;border-bottom-right-radius:2px;}
+  .bubble.ai{align-self:flex-start;background:var(--steel);border-bottom-left-radius:2px;}
+  .bubble .flip{display:inline-block;animation:flap .4s ease;}
+  @keyframes flap{
+    0%{transform:rotateX(90deg);opacity:0;}
+    60%{transform:rotateX(-10deg);opacity:1;}
+    100%{transform:rotateX(0deg);}
+  }
+  .bubble small{display:block;margin-top:4px;color:rgba(255,255,255,0.55);font-family:'IBM Plex Mono',monospace;font-size:10px;}
+
+  .suggest-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .suggest{
+    font-size:12.5px;padding:8px 12px;border-radius:20px;border:1px solid var(--steel-line);
+    background:transparent;color:var(--chalk);cursor:pointer;transition:all .15s;
+  }
+  .suggest:hover{border-color:var(--pitch-bright);color:var(--pitch-bright);}
+
+  .side-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--steel-line);}
+  .side-stat:last-child{border-bottom:none;}
+  .side-stat .label{font-size:13px;color:var(--text-dim);}
+  .side-stat .val{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--amber);}
+
+  .route-step{display:flex;gap:10px;margin-bottom:10px;font-size:13.5px;}
+  .route-step .n{
+    font-family:'IBM Plex Mono',monospace;background:var(--pitch);color:#fff;border-radius:50%;
+    width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;
+  }
+
+  /* ---- Ops dashboard ---- */
+  .ops-top{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+  @media (max-width:800px){.ops-top{grid-template-columns:1fr;}}
+  .brief-text{font-size:14.5px;line-height:1.6;color:var(--chalk);}
+  .brief-text .flag{color:var(--amber);font-weight:600;}
+  .brief-text .crit{color:var(--coral);font-weight:600;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+  @media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+  .stat{background:var(--steel);border-radius:10px;padding:14px;text-align:center;}
+  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:26px;color:var(--pitch-bright);}
+  .stat .lbl{font-size:11px;color:var(--text-dim);margin-top:4px;letter-spacing:0.5px;}
+
+  .gate-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .gate-name{width:74px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);flex-shrink:0;}
+  .bar-track{flex:1;background:var(--steel);border-radius:6px;height:14px;overflow:hidden;position:relative;}
+  .bar-fill{height:100%;border-radius:6px;transition:width 1s ease;}
+  .bar-pct{width:42px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+
+  .incident{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--steel-line);align-items:flex-start;}
+  .incident:last-child{border-bottom:none;}
+  .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;}
+  .dot.low{background:var(--pitch-bright);}
+  .dot.med{background:var(--amber);}
+  .dot.high{background:var(--coral);}
+  .incident .body{font-size:13px;line-height:1.4;}
+  .incident .meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);margin-top:2px;}
+
+  .approve-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:6px;border:none;cursor:pointer;
+  }
+  .btn.go{background:var(--pitch);color:#fff;}
+  .btn.go:hover{background:var(--pitch-bright);}
+  .btn.hold{background:transparent;border:1px solid var(--steel-line);color:var(--text-dim);}
+  .btn.hold:hover{border-color:var(--coral);color:var(--coral);}
+  .btn:disabled{opacity:0.45;cursor:default;}
+
+  footer{margin-top:30px;font-size:11px;color:var(--text-dim);text-align:center;font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <h1>MATCHDAY AI</h1>
+      <span class="tag">FIFA World Cup 2026 · Stadium Ops</span>
+    </div>
+    <div class="clock">
+      MetLife Stadium · East Rutherford
+      <b id="liveclock">--:--:--</b>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="fan"><span class="gate">GATE A</span>Fan Companion</div>
+    <div class="tab" data-panel="volunteer"><span class="gate">GATE B</span>Volunteer Copilot</div>
+    <div class="tab" data-panel="ops"><span class="gate">GATE C</span>Ops Command Center</div>
+  </div>
+
+  <!-- ============ FAN COMPANION ============ -->
+  <div class="panel active" id="fan">
+    <div class="fan-grid">
+      <div class="card">
+        <p class="eyebrow">Multilingual assistant</p>
+        <h3>Ask MATCHDAY AI anything</h3>
+        <div class="lang-strip">
+          <div class="lang-chip active" data-lang="en">EN</div>
+          <div class="lang-chip" data-lang="es">ES</div>
+          <div class="lang-chip" data-lang="ko">KO</div>
+          <div class="lang-chip" data-lang="ar">AR</div>
+          <div class="lang-chip" data-lang="pt">PT</div>
+        </div>
+        <div class="chat-window" id="chatWindow"></div>
+        <div class="suggest-row">
+          <button class="suggest" data-q="route">Nearest accessible entrance?</button>
+          <button class="suggest" data-q="transit">Best way back to the city?</button>
+          <button class="suggest" data-q="waste">Where does this cup go?</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:18px;">
+          <p class="eyebrow">Live for this venue</p>
+          <h3>Fan snapshot</h3>
+          <div class="side-stat"><span class="label">Gate C wait</span><span class="val">6 min</span></div>
+          <div class="side-stat"><span class="label">Weather</span><span class="val">78°F, clear</span></div>
+          <div class="side-stat"><span class="label">Next shuttle</span><span class="val">7:42 PM</span></div>
+          <div class="side-stat"><span class="label">Quiet room</span><span class="val">Sec. 108A</span></div>
+        </div>
+        <div class="card">
+          <p class="eyebrow">Generated route</p>
+          <h3>Metro → Your seat</h3>
+          <div class="route-step"><span class="n">1</span>Exit at Secaucus Junction, follow amber wayfinding signs to Stadium Shuttle.</div>
+          <div class="route-step"><span class="n">2</span>Board shuttle, accessible boarding at bay 3 — no stairs.</div>
+          <div class="route-step"><span class="n">3</span>Enter via Gate D (7 min shorter queue than Gate A right now).</div>
+          <div class="route-step"><span class="n">4</span>Elevator to 200-level, Section 214, Row 12.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VOLUNTEER COPILOT ============ -->
+  <div class="panel" id="volunteer">
+    <div class="fan-grid">
+      <div class="card">
+        <p class="eyebrow">Incident intake</p>
+        <h3>Report what you're seeing</h3>
+        <div class="chat-window" style="height:auto;">
+          <div class="bubble fan">Spilled drink near Section 114, floor's slippery</div>
+          <div class="bubble ai">Classified: <b>Facilities · Low severity</b>. Cleaning crew C-3 dispatched, ETA 4 min. Tell nearby fans to mind their step — here's a line you can use:<br><i>"Careful of the wet spot to your left, cleaning crew's on the way."</i>
+          <small>Auto-routed · no medical/security escalation needed</small></div>
+        </div>
+        <div class="suggest-row">
+          <button class="suggest" onclick="alert('Prototype demo — in production this opens a structured incident form pre-filled by the model.')">+ New report</button>
+        </div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Your shift</p>
+        <h3>Briefing</h3>
+        <div class="side-stat"><span class="label">Zone assigned</span><span class="val">Concourse 100–120</span></div>
+        <div class="side-stat"><span class="label">Open tasks</span><span class="val">2</span></div>
+        <div class="side-stat"><span class="label">Languages nearby</span><span class="val">ES, PT, KO</span></div>
+        <div class="side-stat"><span class="label">Nearest medic</span><span class="val">Station 4 · 90 sec</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPS COMMAND CENTER ============ -->
+  <div class="panel" id="ops">
+    <div class="ops-top">
+      <div class="card">
+        <p class="eyebrow">Generated · updated 90 seconds ago</p>
+        <h3>Pre-kickoff situation brief</h3>
+        <div class="brief-text">
+          Inflow is <span class="flag">14% ahead</span> of the projection for a comparable Group-stage fixture at this kickoff time. Gate C is trending toward capacity in an estimated <span class="flag">12 minutes</span> at current scan rate — recommend opening the overflow lane now. Shuttle Route 2 is running <span class="crit">20 minutes behind schedule</span> due to a road closure on NJ-3; a transit nudge has been drafted for fans still in transit. No security or medical incidents above routine level. Weather is stable through full-time.
+        </div>
+        <div class="approve-row">
+          <button class="btn go">Open Gate C overflow</button>
+          <button class="btn go">Send transit nudge</button>
+          <button class="btn hold" disabled>Delay kickoff — requires commissioner sign-off</button>
+        </div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Tournament-wide, today</p>
+        <h3>Snapshot</h3>
+        <div class="stat-grid">
+          <div class="stat"><div class="num">62,140</div><div class="lbl">FANS SCANNED IN</div></div>
+          <div class="stat"><div class="num">17</div><div class="lbl">OPEN INCIDENTS</div></div>
+          <div class="stat"><div class="num">41</div><div class="lbl">LANGUAGES ACTIVE</div></div>
+          <div class="stat"><div class="num">78%</div><div class="lbl">TRANSIT MODE SHARE</div></div>
+          <div class="stat"><div class="num">91%</div><div class="lbl">WASTE SORTED CORRECTLY</div></div>
+          <div class="stat"><div class="num">3.1m</div><div class="lbl">AVG. RESPONSE TIME</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fan-grid">
+      <div class="card">
+        <p class="eyebrow">Live crowd density by gate</p>
+        <h3>Concourse load</h3>
+        <div class="gate-row"><div class="gate-name">GATE A</div><div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--pitch-bright);"></div></div><div class="bar-pct">52%</div></div>
+        <div class="gate-row"><div class="gate-name">GATE B</div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--pitch-bright);"></div></div><div class="bar-pct">38%</div></div>
+        <div class="gate-row"><div class="gate-name">GATE C</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--coral);"></div></div><div class="bar-pct">88%</div></div>
+        <div class="gate-row"><div class="gate-name">GATE D</div><div class="bar-track"><div class="bar-fill" style="width:61%;background:var(--amber);"></div></div><div class="bar-pct">61%</div></div>
+        <div class="gate-row"><div class="gate-name">GATE E</div><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--pitch-bright);"></div></div><div class="bar-pct">29%</div></div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Merged incident feed</p>
+        <h3>Last 20 minutes</h3>
+        <div class="incident"><div class="dot high"></div><div class="body">Shuttle Route 2 delayed 20 min — road closure NJ-3<div class="meta">TRANSIT · AUTO-DETECTED · 3 MIN AGO</div></div></div>
+        <div class="incident"><div class="dot med"></div><div class="body">Gate C approaching capacity — overflow lane recommended<div class="meta">CROWD MODEL · 1 MIN AGO</div></div></div>
+        <div class="incident"><div class="dot low"></div><div class="body">Spill reported Section 114 — cleaning crew dispatched<div class="meta">VOLUNTEER REPORT · 6 MIN AGO · RESOLVING</div></div></div>
+        <div class="incident"><div class="dot low"></div><div class="body">Wheelchair escort requested, Gate D<div class="meta">FAN COMPANION · 8 MIN AGO · RESOLVED</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>MATCHDAY AI — Prototype concept for FIFA World Cup 2026 · Not affiliated with FIFA · All data illustrative</footer>
+</div>
+
+<script>
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  // Live clock
+  function tick(){
+    const d = new Date();
+    document.getElementById('liveclock').textContent = d.toLocaleTimeString('en-US',{hour12:false});
+  }
+  tick(); setInterval(tick,1000);
+
+  // Chat demo content per language
+  const conversations = {
+    en: [
+      {role:'fan', text:'Where\'s the nearest accessible restroom that isn\'t past the queue?'},
+      {role:'ai', text:'There\'s one behind Section 112, 90 seconds from you — no queue right now. Want the route?'}
+    ],
+    es: [
+      {role:'fan', text:'¿Dónde está el baño accesible más cercano que no esté después de la fila?'},
+      {role:'ai', text:'Hay uno detrás de la Sección 112, a 90 segundos de ti — sin fila ahora mismo. ¿Quieres la ruta?'}
+    ],
+    ko: [
+      {role:'fan', text:'줄을 서지 않고 갈 수 있는 가장 가까운 장애인 화장실이 어디인가요?'},
+      {role:'ai', text:'112구역 뒤쪽에 있어요, 90초 거리이고 지금은 줄이 없습니다. 경로를 안내해드릴까요?'}
+    ],
+    ar: [
+      {role:'fan', text:'أين أقرب حمام لذوي الاحتياجات الخاصة لا يتطلب الانتظار في طابور؟'},
+      {role:'ai', text:'يوجد واحد خلف القسم 112، على بعد 90 ثانية منك — لا يوجد طابور الآن. هل تريد المسار؟'}
+    ],
+    pt: [
+      {role:'fan', text:'Onde fica o banheiro acessível mais próximo que não esteja depois da fila?'},
+      {role:'ai', text:'Tem um atrás da Seção 112, a 90 segundos daqui — sem fila agora. Quer a rota?'}
+    ]
+  };
+
+  const chatWindow = document.getElementById('chatWindow');
+  function renderChat(lang){
+    chatWindow.innerHTML = '';
+    conversations[lang].forEach((msg,i)=>{
+      const div = document.createElement('div');
+      div.className = 'bubble ' + (msg.role === 'fan' ? 'fan' : 'ai');
+      const span = document.createElement('span');
+      span.className = 'flip';
+      span.textContent = msg.text;
+      div.appendChild(span);
+      chatWindow.appendChild(div);
+    });
+  }
+  renderChat('en');
+
+  document.querySelectorAll('.lang-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.lang-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      renderChat(chip.dataset.lang);
+    });
+  });
+
+  // Quick suggestion buttons append a canned exchange
+  const extra = {
+    route: {fan:'What\'s the fastest way to the nearest accessible entrance?', ai:'Gate D is 7 minutes faster than Gate A right now and has step-free access. Routing you there.'},
+    transit: {fan:'Best way back to the city after the match?', ai:'Shuttle Route 2 is delayed — I\'d suggest the 8:10 PM PATH train from Secaucus instead, about 6 minutes faster tonight.'},
+    waste: {fan:'Where does this cup go?', ai:'That\'s recyclable — blue bin, nearest one is 15 feet to your left.'}
+  };
+  document.querySelectorAll('.suggest[data-q]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const q = extra[btn.dataset.q];
+      const f = document.createElement('div'); f.className='bubble fan'; f.textContent=q.fan;
+      const a = document.createElement('div'); a.className='bubble ai';
+      const s = document.createElement('span'); s.className='flip'; s.textContent=q.ai; a.appendChild(s);
+      chatWindow.appendChild(f); chatWindow.appendChild(a);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+  });
+</script>
+</body>
+</html>
