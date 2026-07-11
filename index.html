@@ -1029,5 +1029,134 @@
             });
         });
     </script>
+
+    <!-- Chatbot Widget -->
+    <button id="chat-toggle" aria-label="Open FIFA Assistant">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.03 2 11c0 2.7 1.22 5.12 3.17 6.83L4 22l4.62-1.54C9.7 20.8 10.83 21 12 21c5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
+    </button>
+
+    <div id="chat-panel" role="dialog" aria-label="FIFA Assistant">
+        <div class="chat-header">
+            <div class="chat-header-dot"></div>
+            <div>
+                <div class="chat-header-title">FIFA Assistant</div>
+                <div class="chat-header-sub">UNITED 2026 &middot; LIVE</div>
+            </div>
+        </div>
+        <div id="chat-messages"></div>
+        <div class="chat-input-row">
+            <input id="chat-input" type="text" placeholder="Ask about matches, cities, tickets..." autocomplete="off">
+            <button id="chat-send">Send</button>
+        </div>
+    </div>
+
+    <script>
+    const KB = {
+        matches: [
+            { home: 'USA', away: 'MEX', time: '18:00', venue: 'MetLife Stadium, East Rutherford', date: 'Jun 11' },
+            { home: 'CAN', away: 'BRA', time: '21:00', venue: 'BC Place, Vancouver', date: 'Jun 12' },
+            { home: 'ESP', away: 'JPN', time: '14:00', venue: 'Estadio Azteca, Mexico City', date: 'Jun 13' },
+        ],
+        cities: [
+            { name: 'New York / New Jersey', stadium: 'MetLife Stadium', capacity: '82,500', matches: 8 },
+            { name: 'Los Angeles', stadium: 'SoFi Stadium', capacity: '70,000', matches: 6 },
+            { name: 'Mexico City', stadium: 'Estadio Azteca', capacity: '87,523', matches: 5 },
+        ],
+        tickets: [
+            { tier: 'Category 3', price: '$250', perks: 'Upper tier views, digital token, fan zone access, transit pass' },
+            { tier: 'Category 2', price: '$450', perks: 'Mid-tier sideline, commemorative program, priority entry, $50 F&B credit' },
+            { tier: 'Category 1', price: '$850', perks: 'Lower tier premium, in-seat delivery, lounge access, VIP shuttle' },
+        ],
+        kickoff: new Date('June 11, 2026 18:00:00'),
+    };
+
+    function getDaysLeft() {
+        const diff = KB.kickoff - Date.now();
+        return diff > 0 ? Math.floor(diff / 86400000) : 0;
+    }
+
+    function respond(raw) {
+        const q = raw.trim().toLowerCase();
+
+        if (/^(hi|hello|hey|sup|yo|hola)/.test(q))
+            return 'Hey! I am your FIFA 2026 assistant. Ask me about <b>matches</b>, <b>host cities</b>, <b>tickets</b>, or the <b>countdown</b>.';
+
+        if (/when|start|begin|kickoff|countdown|days left/.test(q))
+            return 'The tournament kicks off on <b>June 11, 2026</b> — that is <b>' + getDaysLeft() + ' days</b> from today! Opening match: USA vs MEX at MetLife Stadium.';
+
+        const teamMatch = KB.matches.find(m =>
+            q.includes(m.home.toLowerCase()) || q.includes(m.away.toLowerCase())
+        );
+        if (teamMatch)
+            return '<b>' + teamMatch.home + ' vs ' + teamMatch.away + '</b><br>' + teamMatch.date + ' · ' + teamMatch.time + '<br>📍 ' + teamMatch.venue;
+
+        if (/match|schedule|fixture|game/.test(q)) {
+            return 'Scheduled matches:<br><br>' + KB.matches.map(m => '• ' + m.home + ' vs ' + m.away + ' — ' + m.date + ' ' + m.time + ' @ ' + m.venue).join('<br>');
+        }
+
+        const cityMatch = KB.cities.find(c =>
+            q.includes(c.name.toLowerCase().split(' ')[0]) ||
+            q.includes(c.stadium.toLowerCase().split(' ')[0])
+        );
+        if (cityMatch)
+            return '<b>' + cityMatch.name + '</b><br>🏟 ' + cityMatch.stadium + ' (' + cityMatch.capacity + ')<br>Hosting <b>' + cityMatch.matches + ' matches</b>';
+
+        if (/cit|host|venue|stadium|where/.test(q))
+            return 'Key host venues:<br><br>' + KB.cities.map(c => '• ' + c.name + ' — ' + c.stadium).join('<br>');
+
+        if (/cheap|afford|budget/.test(q))
+            return 'Most affordable: <b>Category 3 at $250</b> — upper tier views, fan zone access, and a transit pass.';
+
+        if (/best|premium|vip|luxury/.test(q))
+            return 'Top tier: <b>Category 1 at $850</b> — lower tier seating, in-seat service, lounge access, and VIP shuttle.';
+
+        if (/ticket|price|cost|buy|book|apply|seat/.test(q))
+            return 'Ticket tiers:<br><br>' + KB.tickets.map(t => '• ' + t.tier + ': <b>' + t.price + '</b> — ' + t.perks).join('<br>') + '<br><br>Phase 1 applications are open!';
+
+        if (/help|what can|options/.test(q))
+            return 'I can help with:<br>• 📅 <b>Match schedule</b> — ask about any team<br>• 🏙 <b>Host cities</b> and stadiums<br>• 🎟 <b>Ticket prices</b> and tiers<br>• ⏱ <b>Countdown</b> to kickoff';
+
+        return 'Not sure about that. Try asking about a <b>team</b>, <b>city</b>, <b>ticket</b>, or type <b>help</b>.';
+    }
+
+    const panel = document.getElementById('chat-panel');
+    const toggle = document.getElementById('chat-toggle');
+    const messages = document.getElementById('chat-messages');
+    const input = document.getElementById('chat-input');
+    let opened = false;
+
+    function addMsg(text, role) {
+        const el = document.createElement('div');
+        el.className = 'msg ' + role;
+        el.innerHTML = text;
+        messages.appendChild(el);
+        messages.scrollTop = messages.scrollHeight;
+        return el;
+    }
+
+    function sendMessage() {
+        const text = input.value.trim();
+        if (!text) return;
+        addMsg(text, 'user');
+        input.value = '';
+        const typing = addMsg('Thinking...', 'bot typing');
+        setTimeout(function() {
+            typing.className = 'msg bot';
+            typing.innerHTML = respond(text);
+            messages.scrollTop = messages.scrollHeight;
+        }, 400);
+    }
+
+    toggle.addEventListener('click', function() {
+        opened = !opened;
+        panel.classList.toggle('open', opened);
+        if (opened && messages.children.length === 0)
+            addMsg('Welcome to <b>United 2026</b> ⚽<br>Ask me about matches, cities, tickets, or the countdown!', 'bot');
+        if (opened) input.focus();
+    });
+
+    document.getElementById('chat-send').addEventListener('click', sendMessage);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+    </script>
 </body>
 </html>
