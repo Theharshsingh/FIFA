@@ -1,829 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MATCHDAY AI — FIFA World Cup 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --navy:#0B1E2D;
-    --navy-2:#12293D;
-    --pitch:#1F8A52;
-    --pitch-bright:#2FB86B;
-    --amber:#F5A623;
-    --coral:#E8543E;
-    --chalk:#F4F6F2;
-    --steel:#2A3E4E;
-    --steel-line: rgba(244,246,242,0.12);
-    --text-dim: rgba(244,246,242,0.6);
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--navy);
-    color:var(--chalk);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
-  }
-  .wrap{max-width:1100px;margin:0 auto;padding:0 20px 60px;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNITED 2026 — FIFA World Cup</title>
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0B1E2D;       /* primary background */
+            --navy-2: #12293D;     /* card/panel background */
+            --pitch: #1F8A52;      /* primary brand accent */
+            --pitch-bright: #2FB86B; /* hover/active state */
+            --amber: #F5A623;      /* secondary accent, highlights, CTAs */
+            --coral: #E8543E;      /* alerts, live indicators, urgency */
+            --chalk: #F4F6F2;      /* primary text on dark */
+            --steel: #2A3E4E;       /* borders, secondary surfaces */
+            --steel-line: rgba(244,246,242,0.12); /* hairline dividers */
+            --text-dim: rgba(244,246,242,0.6);    /* secondary text */
+            
+            --font-display: 'Big Shoulders Display', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
 
-  /* ---- Match ticker ---- */
-  .ticker-outer{
-    background:var(--navy-2);border-bottom:1px solid var(--steel-line);
-    overflow:hidden;white-space:nowrap;position:relative;
-  }
-  .ticker-inner{
-    display:inline-flex;gap:0;animation:scrollTicker 32s linear infinite;
-  }
-  .ticker-outer:hover .ticker-inner{animation-play-state:paused;}
-  @keyframes scrollTicker{
-    from{transform:translateX(0);}
-    to{transform:translateX(-50%);}
-  }
-  .tick-item{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 26px;color:var(--text-dim);
-    display:inline-flex;align-items:center;gap:8px;border-right:1px solid var(--steel-line);
-  }
-  .tick-item b{color:var(--chalk);}
-  .tick-item .live{color:var(--coral);font-weight:600;}
-  .tick-item .live::before{content:"●";margin-right:4px;animation:pulse 1.2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.25;}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* ---- Header / scoreboard ---- */
-  header{
-    display:flex;justify-content:space-between;align-items:flex-end;
-    border-bottom:2px solid var(--steel-line);
-    padding:28px 0 18px;margin-bottom:22px;flex-wrap:wrap;gap:14px;
-  }
-  .brand{display:flex;align-items:baseline;gap:12px;}
-  .brand h1{
-    font-family:'Big Shoulders Display',sans-serif;
-    font-weight:800;font-size:44px;letter-spacing:0.5px;margin:0;
-    line-height:0.9;
-  }
-  .brand span.tag{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);
-    letter-spacing:2px;text-transform:uppercase;
-  }
-  .clock{
-    font-family:'IBM Plex Mono',monospace;text-align:right;font-size:12px;color:var(--text-dim);
-  }
-  .clock b{color:var(--chalk);font-size:20px;display:block;letter-spacing:1px;}
+        html {
+            scroll-behavior: smooth;
+        }
 
-  /* ---- Tabs styled like gate numbers ---- */
-  .tabs{display:flex;gap:2px;margin-bottom:26px;background:var(--steel-line);border-radius:8px;overflow:hidden;}
-  .tab{
-    flex:1;text-align:center;padding:14px 10px;cursor:pointer;background:var(--navy-2);
-    font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;
-    letter-spacing:0.3px;color:var(--text-dim);position:relative;transition:background .25s, color .25s;
-    user-select:none;border:none;
-  }
-  .tab .gate{font-family:'IBM Plex Mono',monospace;font-size:11px;display:block;color:var(--amber);margin-bottom:4px;font-weight:400;letter-spacing:2px;}
-  .tab.active{background:var(--pitch);color:#fff;}
-  .tab.active .gate{color:rgba(255,255,255,0.85);}
-  .tab:hover:not(.active){background:#17303f;}
-  .tab:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;z-index:1;}
+        body {
+            background-color: var(--navy);
+            color: var(--chalk);
+            font-family: var(--font-body);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  .panel{display:none;animation:fadeIn .35s ease;}
-  .panel.active{display:block;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+        /* Utility */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-  /* ---- Fan Companion ---- */
-  .fan-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:22px;}
-  @media (max-width:800px){.fan-grid{grid-template-columns:1fr;}}
+        .mono { font-family: var(--font-mono); }
+        .amber { color: var(--amber); }
+        .pitch { color: var(--pitch-bright); }
+        .coral { color: var(--coral); }
 
-  .card{
-    background:var(--navy-2);border:1px solid var(--steel-line);border-radius:12px;padding:18px 20px;
-  }
-  .card h3{
-    font-family:'Big Shoulders Display',sans-serif;font-size:20px;margin:0 0 12px;font-weight:700;
-    display:flex;align-items:center;gap:8px;
-  }
-  .eyebrow{
-    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);
-    margin:0 0 4px;
-  }
-  .card-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+        /* Ticker Strip - Broadcast Style */
+        .ticker-strip {
+            background: var(--navy-2);
+            border-bottom: 1px solid var(--steel-line);
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 100;
+        }
 
-  .lang-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-  .lang-chip{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 10px;border-radius:5px;
-    background:var(--steel);border:1px solid var(--steel-line);cursor:pointer;color:var(--text-dim);
-    transition:all .15s;
-  }
-  .lang-chip:hover{border-color:var(--amber);color:var(--chalk);}
-  .lang-chip.active{background:var(--amber);color:var(--navy);border-color:var(--amber);font-weight:600;}
-  .lang-chip:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+        .ticker-content {
+            display: inline-flex;
+            animation: scroll-ticker 40s linear infinite;
+        }
 
-  .a11y-toggle{
-    display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);
-    background:var(--steel);border:1px solid var(--steel-line);border-radius:20px;padding:6px 12px;cursor:pointer;
-  }
-  .a11y-toggle input{accent-color:var(--pitch-bright);width:15px;height:15px;cursor:pointer;}
-  .a11y-toggle:focus-within{outline:2px solid var(--amber);outline-offset:2px;}
+        @keyframes scroll-ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
 
-  .chat-window{
-    height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px 8px;
-  }
-  .bubble{max-width:80%;padding:10px 14px;border-radius:10px;font-size:14.5px;line-height:1.45;}
-  .bubble.fan{align-self:flex-end;background:var(--pitch);color:#fff;border-bottom-right-radius:2px;}
-  .bubble.ai{align-self:flex-start;background:var(--steel);border-bottom-left-radius:2px;}
-  .bubble .flip{display:inline-block;animation:flap .4s ease;}
-  @keyframes flap{
-    0%{transform:rotateX(90deg);opacity:0;}
-    60%{transform:rotateX(-10deg);opacity:1;}
-    100%{transform:rotateX(0deg);}
-  }
-  .bubble small{display:block;margin-top:4px;color:rgba(255,255,255,0.55);font-family:'IBM Plex Mono',monospace;font-size:10px;}
+        @media (prefers-reduced-motion: reduce) {
+            .ticker-content { animation: none; white-space: normal; display: flex; flex-wrap: wrap; }
+        }
 
-  .a11y-mode .bubble{font-size:18px;line-height:1.7;max-width:92%;}
-  .a11y-mode .chat-window{height:360px;}
+        .match-ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 32px;
+            border-right: 1px solid var(--steel-line);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
 
-  .typing-dots{display:inline-flex;gap:4px;align-items:center;padding:2px 0;}
-  .typing-dots span{width:6px;height:6px;background:var(--text-dim);border-radius:50%;animation:blink 1.1s infinite;}
-  .typing-dots span:nth-child(2){animation-delay:.18s;}
-  .typing-dots span:nth-child(3){animation-delay:.36s;}
-  @keyframes blink{0%,80%,100%{opacity:0.2;}40%{opacity:1;}}
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--coral);
+            font-weight: 600;
+        }
 
-  .chat-input-row{display:flex;gap:8px;margin-top:12px;}
-  .chat-input-row input[type="text"]{
-    flex:1;background:var(--steel);border:1px solid var(--steel-line);border-radius:8px;color:var(--chalk);
-    padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;
-  }
-  .chat-input-row input[type="text"]:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
-  .chat-input-row input[type="text"]::placeholder{color:var(--text-dim);}
-  .send-btn{
-    background:var(--pitch);color:#fff;border:none;border-radius:8px;padding:0 18px;font-weight:600;cursor:pointer;
-    font-family:'Inter',sans-serif;font-size:14px;transition:background .15s;
-  }
-  .send-btn:hover{background:var(--pitch-bright);}
-  .send-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--coral);
+            border-radius: 50%;
+            animation: pulse 1.2s infinite ease-in-out;
+        }
 
-  .suggest-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-  .suggest{
-    font-size:12.5px;padding:8px 12px;border-radius:20px;border:1px solid var(--steel-line);
-    background:transparent;color:var(--chalk);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;
-  }
-  .suggest:hover{border-color:var(--pitch-bright);color:var(--pitch-bright);}
-  .suggest:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
 
-  .side-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--steel-line);}
-  .side-stat:last-child{border-bottom:none;}
-  .side-stat .label{font-size:13px;color:var(--text-dim);}
-  .side-stat .val{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--amber);}
+        /* Header & Navigation */
+        header {
+            padding: 24px 0;
+            border-bottom: 2px solid var(--steel-line);
+            position: sticky;
+            top: 0;
+            background: var(--navy);
+            z-index: 99;
+        }
 
-  .route-step{display:flex;gap:10px;margin-bottom:10px;font-size:13.5px;}
-  .route-step .n{
-    font-family:'IBM Plex Mono',monospace;background:var(--pitch);color:#fff;border-radius:50%;
-    width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;
-  }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  /* ---- Volunteer form ---- */
-  textarea.rep-input{
-    width:100%;background:var(--steel);border:1px solid var(--steel-line);border-radius:8px;color:var(--chalk);
-    padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px;resize:vertical;min-height:64px;
-  }
-  textarea.rep-input:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
-  .classify-btn{
-    margin-top:10px;background:var(--pitch);color:#fff;border:none;border-radius:8px;padding:10px 16px;
-    font-weight:600;font-size:13.5px;cursor:pointer;font-family:'Inter',sans-serif;
-  }
-  .classify-btn:hover{background:var(--pitch-bright);}
-  .classify-btn:disabled{opacity:0.5;cursor:default;}
-  .classify-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
-  .result-card{
-    margin-top:14px;background:var(--steel);border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.5;
-    border-left:3px solid var(--pitch-bright);animation:fadeIn .3s ease;
-  }
-  .result-card.high{border-left-color:var(--coral);}
-  .result-card.med{border-left-color:var(--amber);}
-  .result-card .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
-  .result-card .tag{
-    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.5px;padding:3px 8px;border-radius:4px;
-    background:rgba(244,246,242,0.08);color:var(--chalk);
-  }
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
 
-  /* ---- Ops dashboard ---- */
-  .ops-top{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
-  @media (max-width:800px){.ops-top{grid-template-columns:1fr;}}
-  .brief-text{font-size:14.5px;line-height:1.6;color:var(--chalk);}
-  .brief-text .flag{color:var(--amber);font-weight:600;}
-  .brief-text .crit{color:var(--coral);font-weight:600;}
+        .brand h1 {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 38px;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            line-height: 1;
+        }
 
-  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
-  @media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
-  .stat{background:var(--steel);border-radius:10px;padding:14px;text-align:center;}
-  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:26px;color:var(--pitch-bright);}
-  .stat .lbl{font-size:11px;color:var(--text-dim);margin-top:4px;letter-spacing:0.5px;}
+        .brand span {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--amber);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
 
-  .live-pill{
-    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--coral);letter-spacing:1px;
-    display:inline-flex;align-items:center;gap:5px;
-  }
-  .live-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--coral);animation:pulse 1.2s infinite;}
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
 
-  .gate-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-  .gate-name{width:74px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);flex-shrink:0;}
-  .bar-track{flex:1;background:var(--steel);border-radius:6px;height:14px;overflow:hidden;position:relative;}
-  .bar-fill{height:100%;border-radius:6px;transition:width 1.1s ease, background 1.1s ease;}
-  .bar-pct{width:42px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 19px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            position: relative;
+        }
 
-  .incident{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--steel-line);align-items:flex-start;}
-  .incident:last-child{border-bottom:none;}
-  .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;}
-  .dot.low{background:var(--pitch-bright);}
-  .dot.med{background:var(--amber);}
-  .dot.high{background:var(--coral);}
-  .incident .body{font-size:13px;line-height:1.4;}
-  .incident .meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);margin-top:2px;}
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--chalk);
+        }
 
-  .approve-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
-  .btn{
-    font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:6px;border:none;cursor:pointer;
-  }
-  .btn.go{background:var(--pitch);color:#fff;}
-  .btn.go:hover{background:var(--pitch-bright);}
-  .btn.hold{background:transparent;border:1px solid var(--steel-line);color:var(--text-dim);}
-  .btn.hold:hover{border-color:var(--coral);color:var(--coral);}
-  .btn:disabled{opacity:0.45;cursor:default;}
-  .btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -32px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--pitch-bright);
+        }
 
-  /* ---- Sustainability Hub ---- */
-  .bin-select{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-  .bin-select input[type="text"]{
-    flex:1;min-width:160px;background:var(--steel);border:1px solid var(--steel-line);border-radius:8px;color:var(--chalk);
-    padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px;
-  }
-  .bin-select input[type="text"]:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
-  .bin-result{
-    margin-top:12px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:var(--steel);
-    animation:fadeIn .3s ease;
-  }
-  .bin-swatch{width:34px;height:34px;border-radius:8px;flex-shrink:0;}
-  .bin-swatch.recycle{background:#2F8FD6;}
-  .bin-swatch.compost{background:#7A9A3C;}
-  .bin-swatch.landfill{background:#6B6B6B;}
-  .mode-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .mode-name{width:84px;font-size:12.5px;color:var(--text-dim);flex-shrink:0;}
-  select.mode-select{
-    background:var(--steel);border:1px solid var(--steel-line);color:var(--chalk);border-radius:8px;
-    padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;
-  }
-  select.mode-select:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
+        /* Hero Section - Night Matchday Aesthetic */
+        #hero {
+            padding: 120px 0;
+            position: relative;
+            background: linear-gradient(180deg, rgba(11, 30, 45, 0.4) 0%, var(--navy) 100%),
+                        url('https://images.unsplash.com/photo-1697562160779-fed83c21a2cd?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            text-align: center;
+        }
 
-  footer{margin-top:30px;font-size:11px;color:var(--text-dim);text-align:center;font-family:'IBM Plex Mono',monospace;}
-  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
-</style>
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: 15px;
+            letter-spacing: 0.3em;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(64px, 10vw, 140px);
+            line-height: 0.85;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 64px;
+            background: rgba(18, 41, 61, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid var(--steel-line);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .countdown-unit {
+            text-align: center;
+        }
+
+        .countdown-unit span {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: clamp(32px, 6vw, 72px);
+            color: var(--amber);
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .countdown-unit label {
+            font-family: var(--font-display);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.15em;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .cta-btn {
+            background: var(--pitch);
+            color: var(--chalk);
+            padding: 20px 48px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 22px;
+            text-transform: uppercase;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-btn:hover {
+            background: var(--pitch-bright);
+            transform: translateY(-2px);
+        }
+
+        .cta-btn:focus-visible {
+            outline: 3px solid var(--amber);
+            outline-offset: 4px;
+        }
+
+        /* Generic Section Styling */
+        section {
+            padding: 100px 0;
+            border-bottom: 1px solid var(--steel-line);
+        }
+
+        .section-header {
+            margin-bottom: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 56px;
+            text-transform: uppercase;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* Match Schedule - Broadcast Panel Aesthetic */
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .match-row {
+            background: var(--navy-2);
+            border: 1px solid var(--steel-line);
+            border-radius: 10px;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .match-row:hover {
+            border-color: var(--steel);
+            background: #173044;
+        }
+
+        .team-block {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .team-block.away {
+            justify-content: flex-end;
+        }
+
+        .flag-icon {
+            width: 48px;
+            height: 32px;
+            object-fit: cover;
+            border: 1px solid var(--steel-line);
+        }
+
+        .team-label {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .match-center {
+            padding: 0 60px;
+            text-align: center;
+            border-left: 1px solid var(--steel-line);
+            border-right: 1px solid var(--steel-line);
+        }
+
+        .match-time-data {
+            font-family: var(--font-mono);
+            font-size: 24px;
+            color: var(--amber);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .match-venue-data {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: var(--font-mono);
+        }
+
+        /* Host City Guide - Card Panels */
+        .city-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 32px;
+        }
+
+        .city-panel {
+            background: var(--navy-2);
+            border: 1px solid var(--steel-line);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .city-visual {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .city-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .city-panel:hover .city-visual img {
+            transform: scale(1.05);
+        }
+
+        .city-info {
+            padding: 24px;
+        }
+
+        .city-headline {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .city-data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-top: 1px solid var(--steel-line);
+        }
+
+        .city-data-row span:first-child {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .city-data-row span:last-child {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--pitch-bright);
+        }
+
+        /* Ticket Info - Scoreboard Styling */
+        .ticket-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .ticket-box {
+            background: var(--navy-2);
+            border: 1px solid var(--steel-line);
+            border-radius: 12px;
+            padding: 48px 32px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .ticket-box.featured {
+            border: 2px solid var(--amber);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+
+        .tier-label {
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .price-tag {
+            font-family: var(--font-mono);
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            line-height: 1;
+        }
+
+        .price-tag small {
+            font-size: 18px;
+            color: var(--text-dim);
+        }
+
+        .perk-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 40px;
+            flex-grow: 1;
+        }
+
+        .perk-list li {
+            font-size: 14px;
+            color: var(--text-dim);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--steel-line);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .perk-list li::before {
+            content: '>';
+            color: var(--pitch-bright);
+            font-family: var(--font-mono);
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 0;
+            border-top: 2px solid var(--steel-line);
+            background: #081622;
+        }
+
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-legal {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            max-width: 400px;
+            text-align: left;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 1024px) {
+            .match-row {
+                flex-direction: column;
+                gap: 24px;
+            }
+            .match-center {
+                border: none;
+                padding: 16px 0;
+                border-top: 1px solid var(--steel-line);
+                border-bottom: 1px solid var(--steel-line);
+                width: 100%;
+            }
+            .team-block.away { justify-content: flex-start; }
+            .countdown-container { gap: 24px; padding: 24px; }
+        }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 56px; }
+            .nav-links { display: none; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .countdown-container { grid-template-columns: repeat(2, 1fr); display: grid; }
+        }
+
+        /* Motion System */
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-reveal].visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
 
-<div class="ticker-outer" aria-hidden="true">
-  <div class="ticker-inner" id="tickerInner"></div>
-</div>
-
-<div class="wrap">
-
-  <header>
-    <div class="brand">
-      <h1>MATCHDAY AI</h1>
-      <span class="tag">FIFA World Cup 2026 · Stadium Ops</span>
-    </div>
-    <div class="clock">
-      MetLife Stadium · East Rutherford
-      <b id="liveclock">--:--:--</b>
-    </div>
-  </header>
-
-  <div class="tabs" role="tablist" aria-label="MATCHDAY AI sections" id="tabs">
-    <button class="tab active" role="tab" aria-selected="true" aria-controls="fan" id="tab-fan" data-panel="fan" tabindex="0"><span class="gate">GATE A</span>Fan Companion</button>
-    <button class="tab" role="tab" aria-selected="false" aria-controls="volunteer" id="tab-volunteer" data-panel="volunteer" tabindex="-1"><span class="gate">GATE B</span>Volunteer Copilot</button>
-    <button class="tab" role="tab" aria-selected="false" aria-controls="ops" id="tab-ops" data-panel="ops" tabindex="-1"><span class="gate">GATE C</span>Ops Command Center</button>
-    <button class="tab" role="tab" aria-selected="false" aria-controls="sustain" id="tab-sustain" data-panel="sustain" tabindex="-1"><span class="gate">GATE D</span>Sustainability Hub</button>
-  </div>
-
-  <!-- ============ FAN COMPANION ============ -->
-  <div class="panel active" id="fan" role="tabpanel" aria-labelledby="tab-fan">
-    <div class="fan-grid">
-      <div class="card">
-        <div class="card-head-row">
-          <div>
-            <p class="eyebrow">Multilingual assistant</p>
-            <h3>Ask MATCHDAY AI anything</h3>
-          </div>
-          <label class="a11y-toggle">
-            <input type="checkbox" id="a11yToggle">
-            Plain language &amp; larger text
-          </label>
+    <!-- Broadcast Match Ticker -->
+    <div class="ticker-strip" aria-hidden="true">
+        <div class="ticker-content">
+            <div class="match-ticker-item">
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+                ARG <span class="amber">2 - 1</span> BRA · <span class="mono">78'</span>
+            </div>
+            <div class="match-ticker-item">FINAL · USA <span class="amber">3 - 0</span> MEX</div>
+            <div class="match-ticker-item">
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+                CAN <span class="amber">1 - 1</span> FRA · <span class="mono">34'</span>
+            </div>
+            <div class="match-ticker-item">UPCOMING · ESP VS JPN · <span class="mono">20:00</span></div>
+            <div class="match-ticker-item">UPCOMING · GER VS MAR · <span class="mono">22:00</span></div>
+            <!-- Duplicate for infinite scroll -->
+            <div class="match-ticker-item">
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+                ARG <span class="amber">2 - 1</span> BRA · <span class="mono">78'</span>
+            </div>
+            <div class="match-ticker-item">FINAL · USA <span class="amber">3 - 0</span> MEX</div>
+            <div class="match-ticker-item">
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+                CAN <span class="amber">1 - 1</span> FRA · <span class="mono">34'</span>
+            </div>
+            <div class="match-ticker-item">UPCOMING · ESP VS JPN · <span class="mono">20:00</span></div>
+            <div class="match-ticker-item">UPCOMING · GER VS MAR · <span class="mono">22:00</span></div>
         </div>
-        <div class="lang-strip" role="group" aria-label="Choose language">
-          <button class="lang-chip active" data-lang="en" aria-pressed="true">EN</button>
-          <button class="lang-chip" data-lang="es" aria-pressed="false">ES</button>
-          <button class="lang-chip" data-lang="ko" aria-pressed="false">KO</button>
-          <button class="lang-chip" data-lang="ar" aria-pressed="false">AR</button>
-          <button class="lang-chip" data-lang="pt" aria-pressed="false">PT</button>
-          <button class="lang-chip" data-lang="fr" aria-pressed="false">FR</button>
-          <button class="lang-chip" data-lang="hi" aria-pressed="false">HI</button>
-        </div>
-        <div class="chat-window" id="chatWindow" role="log" aria-live="polite" aria-label="Chat with MATCHDAY AI"></div>
-        <div class="chat-input-row">
-          <label for="chatInput" class="sr-only">Type a message to MATCHDAY AI</label>
-          <input type="text" id="chatInput" placeholder="Type your question…" autocomplete="off">
-          <button class="send-btn" id="sendBtn">Send</button>
-        </div>
-        <div class="suggest-row">
-          <button class="suggest" data-q="route">Nearest accessible entrance?</button>
-          <button class="suggest" data-q="transit">Best way back to the city?</button>
-          <button class="suggest" data-q="waste">Where does this cup go?</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="card" style="margin-bottom:18px;">
-          <p class="eyebrow">Live for this venue</p>
-          <h3>Fan snapshot</h3>
-          <div class="side-stat"><span class="label">Gate C wait</span><span class="val">6 min</span></div>
-          <div class="side-stat"><span class="label">Weather</span><span class="val">78°F, clear</span></div>
-          <div class="side-stat"><span class="label">Next shuttle</span><span class="val">7:42 PM</span></div>
-          <div class="side-stat"><span class="label">Quiet room</span><span class="val">Sec. 108A</span></div>
-        </div>
-        <div class="card">
-          <p class="eyebrow">Generated route</p>
-          <h3>Metro → Your seat</h3>
-          <div class="route-step"><span class="n">1</span>Exit at Secaucus Junction, follow amber wayfinding signs to Stadium Shuttle.</div>
-          <div class="route-step"><span class="n">2</span>Board shuttle, accessible boarding at bay 3 — no stairs.</div>
-          <div class="route-step"><span class="n">3</span>Enter via Gate D (7 min shorter queue than Gate A right now).</div>
-          <div class="route-step"><span class="n">4</span>Elevator to 200-level, Section 214, Row 12.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ VOLUNTEER COPILOT ============ -->
-  <div class="panel" id="volunteer" role="tabpanel" aria-labelledby="tab-volunteer" hidden>
-    <div class="fan-grid">
-      <div class="card">
-        <p class="eyebrow">Incident intake</p>
-        <h3>Report what you're seeing</h3>
-        <div class="chat-window" id="volLog" style="height:auto;max-height:280px;">
-          <div class="bubble fan">Spilled drink near Section 114, floor's slippery</div>
-          <div class="bubble ai">Classified: <b>Facilities · Low severity</b>. Cleaning crew C-3 dispatched, ETA 4 min. Tell nearby fans to mind their step — here's a line you can use:<br><i>"Careful of the wet spot to your left, cleaning crew's on the way."</i>
-          <small>Auto-routed · no medical/security escalation needed</small></div>
-        </div>
-
-        <div id="reportFormWrap" style="display:none;margin-top:14px;">
-          <label for="reportInput" class="sr-only">Describe what you're seeing</label>
-          <textarea class="rep-input" id="reportInput" placeholder="Describe what you're seeing… e.g. &quot;fan collapsed near Section 120, not responding&quot;"></textarea>
-          <button class="classify-btn" id="classifyBtn">Classify &amp; route</button>
-          <div id="classifyResult"></div>
-        </div>
-
-        <div class="suggest-row">
-          <button class="suggest" id="newReportBtn">+ New report</button>
-        </div>
-      </div>
-      <div class="card">
-        <p class="eyebrow">Your shift</p>
-        <h3>Briefing</h3>
-        <div class="side-stat"><span class="label">Zone assigned</span><span class="val">Concourse 100–120</span></div>
-        <div class="side-stat"><span class="label">Open tasks</span><span class="val" id="openTasksVal">2</span></div>
-        <div class="side-stat"><span class="label">Languages nearby</span><span class="val">ES, PT, KO</span></div>
-        <div class="side-stat"><span class="label">Nearest medic</span><span class="val">Station 4 · 90 sec</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ OPS COMMAND CENTER ============ -->
-  <div class="panel" id="ops" role="tabpanel" aria-labelledby="tab-ops" hidden>
-    <div class="ops-top">
-      <div class="card">
-        <div class="card-head-row">
-          <p class="eyebrow">Generated · updated continuously</p>
-          <span class="live-pill">LIVE</span>
-        </div>
-        <h3>Pre-kickoff situation brief</h3>
-        <div class="brief-text">
-          Inflow is <span class="flag">14% ahead</span> of the projection for a comparable Group-stage fixture at this kickoff time. Gate C is trending toward capacity in an estimated <span class="flag">12 minutes</span> at current scan rate — recommend opening the overflow lane now. Shuttle Route 2 is running <span class="crit">20 minutes behind schedule</span> due to a road closure on NJ-3; a transit nudge has been drafted for fans still in transit. No security or medical incidents above routine level. Weather is stable through full-time.
-        </div>
-        <div class="approve-row">
-          <button class="btn go">Open Gate C overflow</button>
-          <button class="btn go">Send transit nudge</button>
-          <button class="btn hold" disabled>Delay kickoff — requires commissioner sign-off</button>
-        </div>
-      </div>
-      <div class="card">
-        <p class="eyebrow">Tournament-wide, today</p>
-        <h3>Snapshot</h3>
-        <div class="stat-grid">
-          <div class="stat"><div class="num">62,140</div><div class="lbl">FANS SCANNED IN</div></div>
-          <div class="stat"><div class="num">17</div><div class="lbl">OPEN INCIDENTS</div></div>
-          <div class="stat"><div class="num">43</div><div class="lbl">LANGUAGES ACTIVE</div></div>
-          <div class="stat"><div class="num">78%</div><div class="lbl">TRANSIT MODE SHARE</div></div>
-          <div class="stat"><div class="num">91%</div><div class="lbl">WASTE SORTED CORRECTLY</div></div>
-          <div class="stat"><div class="num">3.1m</div><div class="lbl">AVG. RESPONSE TIME</div></div>
-        </div>
-      </div>
     </div>
 
-    <div class="fan-grid">
-      <div class="card">
-        <div class="card-head-row">
-          <p class="eyebrow">Crowd density by gate</p>
-          <span class="live-pill">LIVE</span>
+    <!-- Main Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="brand">
+                    <h1>United 2026</h1>
+                    <span>FIFA World Cup</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#hero" class="active">Home</a>
+                    <a href="#schedule">Schedule</a>
+                    <a href="#cities">Cities</a>
+                    <a href="#tickets">Tickets</a>
+                </div>
+                <a href="#tickets" class="cta-btn" style="padding: 12px 28px; font-size: 15px;">Book Tickets</a>
+            </nav>
         </div>
-        <h3>Concourse load</h3>
-        <div id="gateBars"></div>
-      </div>
-      <div class="card">
-        <p class="eyebrow">Merged incident feed</p>
-        <h3>Last 20 minutes</h3>
-        <div class="incident"><div class="dot high"></div><div class="body">Shuttle Route 2 delayed 20 min — road closure NJ-3<div class="meta">TRANSIT · AUTO-DETECTED · 3 MIN AGO</div></div></div>
-        <div class="incident"><div class="dot med"></div><div class="body">Gate C approaching capacity — overflow lane recommended<div class="meta">CROWD MODEL · 1 MIN AGO</div></div></div>
-        <div class="incident"><div class="dot low"></div><div class="body">Spill reported Section 114 — cleaning crew dispatched<div class="meta">VOLUNTEER REPORT · 6 MIN AGO · RESOLVING</div></div></div>
-        <div class="incident"><div class="dot low"></div><div class="body">Wheelchair escort requested, Gate D<div class="meta">FAN COMPANION · 8 MIN AGO · RESOLVED</div></div></div>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ============ SUSTAINABILITY HUB ============ -->
-  <div class="panel" id="sustain" role="tabpanel" aria-labelledby="tab-sustain" hidden>
-    <div class="fan-grid">
-      <div class="card">
-        <p class="eyebrow">Vision-assisted sorting</p>
-        <h3>Where does this go?</h3>
-        <p style="font-size:13.5px;color:var(--text-dim);margin-top:0;">In the app, a fan points their camera at an item. Here, type what you're holding to simulate the model's classification.</p>
-        <div class="bin-select">
-          <label for="binInput" class="sr-only">Describe the item</label>
-          <input type="text" id="binInput" placeholder="e.g. plastic cup, banana peel, chip bag…">
-          <button class="classify-btn" id="binBtn" style="margin-top:0;">Identify bin</button>
+    <!-- Hero Section with Countdown -->
+    <section id="hero">
+        <div class="container hero-content">
+            <span class="hero-eyebrow">The World Cup Returns to North America</span>
+            <h1 class="hero-title">United for <br> the Win</h1>
+            
+            <div class="countdown-container">
+                <div class="countdown-unit">
+                    <span id="days" class="mono">342</span>
+                    <label>Days</label>
+                </div>
+                <div class="countdown-unit">
+                    <span id="hours" class="mono">14</span>
+                    <label>Hours</label>
+                </div>
+                <div class="countdown-unit">
+                    <span id="minutes" class="mono">22</span>
+                    <label>Mins</label>
+                </div>
+                <div class="countdown-unit">
+                    <span id="seconds" class="mono">09</span>
+                    <label>Secs</label>
+                </div>
+            </div>
+
+            <a href="#schedule" class="cta-btn">View Match Schedule</a>
         </div>
-        <div id="binResult"></div>
-      </div>
+    </section>
 
-      <div class="card">
-        <p class="eyebrow">Tournament sustainability, today</p>
-        <h3>Impact snapshot</h3>
-        <div class="stat-grid" style="grid-template-columns:repeat(2,1fr);">
-          <div class="stat"><div class="num">91%</div><div class="lbl">WASTE SORTED CORRECTLY</div></div>
-          <div class="stat"><div class="num">38.2t</div><div class="lbl">CO₂e AVOIDED VS. BASELINE</div></div>
+    <!-- Match Schedule Section -->
+    <section id="schedule" data-reveal>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Match Schedule</h2>
+                <p class="mono amber" style="font-size: 14px;">GROUP STAGE · WEEK 1</p>
+            </div>
+            
+            <div class="match-list">
+                <!-- Match 1 -->
+                <div class="match-row">
+                    <div class="team-block">
+                        <img src="https://flagcdn.com/w80/us.png" alt="USA Flag" class="flag-icon">
+                        <span class="team-label">USA</span>
+                    </div>
+                    <div class="match-center">
+                        <span class="match-time-data">18:00</span>
+                        <span class="match-venue-data">MetLife Stadium, East Rutherford</span>
+                    </div>
+                    <div class="team-block away">
+                        <span class="team-label">MEX</span>
+                        <img src="https://flagcdn.com/w80/mx.png" alt="Mexico Flag" class="flag-icon">
+                    </div>
+                </div>
+
+                <!-- Match 2 -->
+                <div class="match-row">
+                    <div class="team-block">
+                        <img src="https://flagcdn.com/w80/ca.png" alt="Canada Flag" class="flag-icon">
+                        <span class="team-label">CAN</span>
+                    </div>
+                    <div class="match-center">
+                        <span class="match-time-data">21:00</span>
+                        <span class="match-venue-data">BC Place, Vancouver</span>
+                    </div>
+                    <div class="team-block away">
+                        <span class="team-label">BRA</span>
+                        <img src="https://flagcdn.com/w80/br.png" alt="Brazil Flag" class="flag-icon">
+                    </div>
+                </div>
+
+                <!-- Match 3 -->
+                <div class="match-row">
+                    <div class="team-block">
+                        <img src="https://flagcdn.com/w80/es.png" alt="Spain Flag" class="flag-icon">
+                        <span class="team-label">ESP</span>
+                    </div>
+                    <div class="match-center">
+                        <span class="match-time-data">14:00</span>
+                        <span class="match-venue-data">Estadio Azteca, Mexico City</span>
+                    </div>
+                    <div class="team-block away">
+                        <span class="team-label">JPN</span>
+                        <img src="https://flagcdn.com/w80/jp.png" alt="Japan Flag" class="flag-icon">
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
+    </section>
 
-    <div class="card" style="margin-top:22px;">
-      <p class="eyebrow">Carbon-aware trip planning</p>
-      <h3>Estimate your matchday footprint</h3>
-      <div class="mode-bar-row">
-        <span class="mode-name">Your mode:</span>
-        <select class="mode-select" id="modeSelect">
-          <option value="transit">Rail / shuttle</option>
-          <option value="rideshare-shared">Rideshare (shared)</option>
-          <option value="rideshare-solo">Rideshare (solo)</option>
-          <option value="drive">Personal vehicle</option>
-          <option value="bike">Bike / walk</option>
-        </select>
-      </div>
-      <div id="carbonResult" style="margin-top:12px;font-size:13.5px;color:var(--text-dim);">Estimated round trip: <b style="color:var(--pitch-bright);">2.1 kg CO₂e</b> — about 74% less than driving alone.</div>
+    <!-- Host City Guide -->
+    <section id="cities" data-reveal>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Host Cities</h2>
+                <p class="mono pitch" style="font-size: 14px;">16 CITIES · 3 NATIONS</p>
+            </div>
+            
+            <div class="city-layout">
+                <!-- City 1 -->
+                <article class="city-panel">
+                    <div class="city-visual">
+                        <img src="https://images.pexels.com/photos/16543548/pexels-photo-16543548.jpeg" alt="New York New Jersey skyline">
+                    </div>
+                    <div class="city-info">
+                        <h3 class="city-headline">NY / NJ</h3>
+                        <div class="city-data-row">
+                            <span>Primary Stadium</span>
+                            <span>MetLife Stadium</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Capacity</span>
+                            <span>82,500</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Matches Hosted</span>
+                            <span>8</span>
+                        </div>
+                    </div>
+                </article>
 
-      <div style="margin-top:20px;">
-        <div class="mode-bar-row"><span class="mode-name">Transit</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--pitch-bright);"></div></div><span class="bar-pct">78%</span></div>
-        <div class="mode-bar-row"><span class="mode-name">Rideshare</span><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--amber);"></div></div><span class="bar-pct">15%</span></div>
-        <div class="mode-bar-row"><span class="mode-name">Drive/Park</span><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--coral);"></div></div><span class="bar-pct">5%</span></div>
-        <div class="mode-bar-row"><span class="mode-name">Bike/Walk</span><div class="bar-track"><div class="bar-fill" style="width:2%;background:#8AB4F8;"></div></div><span class="bar-pct">2%</span></div>
-      </div>
-    </div>
-  </div>
+                <!-- City 2 -->
+                <article class="city-panel">
+                    <div class="city-visual">
+                        <img src="https://images.pexels.com/photos/34227895/pexels-photo-34227895.jpeg" alt="Los Angeles SoFi Stadium">
+                    </div>
+                    <div class="city-info">
+                        <h3 class="city-headline">Los Angeles</h3>
+                        <div class="city-data-row">
+                            <span>Primary Stadium</span>
+                            <span>SoFi Stadium</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Capacity</span>
+                            <span>70,000</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Matches Hosted</span>
+                            <span>6</span>
+                        </div>
+                    </div>
+                </article>
 
-  <footer>MATCHDAY AI — Prototype concept for FIFA World Cup 2026 · Not affiliated with FIFA · All data illustrative</footer>
-</div>
-
-<script>
-  /* ================= TABS (keyboard accessible) ================= */
-  const tabs = Array.from(document.querySelectorAll('.tab'));
-  const panels = Array.from(document.querySelectorAll('.panel'));
-
-  function activateTab(tab){
-    tabs.forEach(t=>{
-      const selected = t === tab;
-      t.classList.toggle('active', selected);
-      t.setAttribute('aria-selected', selected ? 'true':'false');
-      t.tabIndex = selected ? 0 : -1;
-    });
-    panels.forEach(p=>{
-      const show = p.id === tab.dataset.panel;
-      p.classList.toggle('active', show);
-      if(show){ p.removeAttribute('hidden'); } else { p.setAttribute('hidden',''); }
-    });
-  }
-
-  tabs.forEach((tab,i)=>{
-    tab.addEventListener('click', ()=>activateTab(tab));
-    tab.addEventListener('keydown', (e)=>{
-      let idx = i;
-      if(e.key === 'ArrowRight'){ idx = (i+1) % tabs.length; }
-      else if(e.key === 'ArrowLeft'){ idx = (i-1+tabs.length) % tabs.length; }
-      else if(e.key === 'Home'){ idx = 0; }
-      else if(e.key === 'End'){ idx = tabs.length-1; }
-      else { return; }
-      e.preventDefault();
-      tabs[idx].focus();
-      activateTab(tabs[idx]);
-    });
-  });
-
-  /* ================= CLOCK ================= */
-  function tick(){
-    const d = new Date();
-    document.getElementById('liveclock').textContent = d.toLocaleTimeString('en-US',{hour12:false});
-  }
-  tick(); setInterval(tick,1000);
-
-  /* ================= MATCH TICKER ================= */
-  const matches = [
-    {a:'USA', b:'WAL', sa:2, sb:1, min:"78'", status:'live'},
-    {a:'MEX', b:'JPN', sa:0, sb:0, min:"34'", status:'live'},
-    {a:'BRA', b:'GER', sa:3, sb:2, min:'FT', status:'ft'},
-    {a:'CAN', b:'ARG', sa:1, sb:1, min:'62\'', status:'live'},
-    {a:'ESP', b:'KOR', sa:2, sb:0, min:'FT', status:'ft'},
-    {a:'FRA', b:'MAR', sa:1, sb:0, min:"15'", status:'live'}
-  ];
-  function tickerMarkup(){
-    return matches.map(m=>{
-      const clockClass = m.status === 'live' ? 'live' : '';
-      return `<span class="tick-item"><span class="${clockClass}">${m.min}</span> <b>${m.a} ${m.sa}</b> – <b>${m.sb} ${m.b}</b></span>`;
-    }).join('');
-  }
-  const tickerHTML = tickerMarkup();
-  document.getElementById('tickerInner').innerHTML = tickerHTML + tickerHTML; // duplicated for seamless loop
-
-  /* ================= FAN COMPANION CHAT ================= */
-  const chatWindow = document.getElementById('chatWindow');
-  const chatInput = document.getElementById('chatInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const a11yToggle = document.getElementById('a11yToggle');
-  let currentLang = 'en';
-
-  const seedConversations = {
-    en: [{role:'fan', text:"Where's the nearest accessible restroom that isn't past the queue?"},
-         {role:'ai', text:"There's one behind Section 112, 90 seconds from you — no queue right now. Want the route?"}],
-    es: [{role:'fan', text:'¿Dónde está el baño accesible más cercano que no esté después de la fila?'},
-         {role:'ai', text:'Hay uno detrás de la Sección 112, a 90 segundos de ti — sin fila ahora mismo. ¿Quieres la ruta?'}],
-    ko: [{role:'fan', text:'줄을 서지 않고 갈 수 있는 가장 가까운 장애인 화장실이 어디인가요?'},
-         {role:'ai', text:'112구역 뒤쪽에 있어요, 90초 거리이고 지금은 줄이 없습니다. 경로를 안내해드릴까요?'}],
-    ar: [{role:'fan', text:'أين أقرب حمام لذوي الاحتياجات الخاصة لا يتطلب الانتظار في طابور؟'},
-         {role:'ai', text:'يوجد واحد خلف القسم 112، على بعد 90 ثانية منك — لا يوجد طابور الآن. هل تريد المسار؟'}],
-    pt: [{role:'fan', text:'Onde fica o banheiro acessível mais próximo que não esteja depois da fila?'},
-         {role:'ai', text:'Tem um atrás da Seção 112, a 90 segundos daqui — sem fila agora. Quer a rota?'}],
-    fr: [{role:'fan', text:"Où sont les toilettes accessibles les plus proches, sans passer par la file d'attente ?"},
-         {role:'ai', text:"Il y en a derrière la Section 112, à 90 secondes d'ici — pas de file en ce moment. Vous voulez l'itinéraire ?"}],
-    hi: [{role:'fan', text:'सबसे नज़दीकी सुलभ शौचालय कहाँ है जो लाइन में लगे बिना पहुँचा जा सके?'},
-         {role:'ai', text:'सेक्शन 112 के पीछे एक है, आपसे 90 सेकंड दूर — अभी कोई लाइन नहीं है। क्या मैं रास्ता दिखाऊं?'}]
-  };
-
-  const fallback = {
-    en: "Got it — routing that to the right information for you. In the full product this pulls live venue data to answer anything from wayfinding to transit to accessibility.",
-    es: 'Entendido — buscando la información correcta para ti. En el producto completo, esto usa datos en vivo del recinto para responder cualquier pregunta.',
-    ko: '알겠습니다 — 관련 정보를 찾고 있어요. 실제 제품에서는 실시간 경기장 데이터를 활용해 답변합니다.',
-    ar: 'حسناً — سأبحث عن المعلومات المناسبة لك. في المنتج الكامل، يعتمد هذا على بيانات الملعب المباشرة.',
-    pt: 'Entendido — buscando a informação certa para você. No produto completo, isso usa dados ao vivo do estádio.',
-    fr: "Compris — je cherche la bonne information pour vous. Dans le produit complet, cela s'appuie sur les données en direct du stade.",
-    hi: 'समझ गया — आपके लिए सही जानकारी ढूंढ रहा हूँ। पूर्ण उत्पाद में यह स्टेडियम के लाइव डेटा का उपयोग करता है।'
-  };
-
-  const keywordReplies = {
-    en: [[/restroom|toilet|bathroom/i,"There's an accessible restroom behind Section 112, 90 seconds away — no queue right now."],
-         [/transit|shuttle|train|way back|way home/i,"Shuttle Route 2 is delayed. I'd suggest the 8:10 PM PATH train from Secaucus instead — about 6 minutes faster tonight."],
-         [/cup|bottle|trash|recycl|waste|bin/i,"That's recyclable — blue bin, nearest one is 15 feet to your left."],
-         [/wheelchair|accessible|access/i,"Gate D has step-free access and is currently 7 minutes faster than Gate A. Routing you there."]],
-  };
-
-  function matchReply(lang, text){
-    const rules = keywordReplies.en; // matching done on keywords regardless of chip language for demo purposes
-    for(const [re, enReply] of rules){
-      if(re.test(text)){
-        // if we have a localized seed answer matching this intent, prefer it; else fall back to English reply
-        return lang === 'en' ? enReply : (fallback[lang] + ' (' + enReply + ')');
-      }
-    }
-    return fallback[lang] || fallback.en;
-  }
-
-  function appendBubble(role, text){
-    const div = document.createElement('div');
-    div.className = 'bubble ' + (role === 'fan' ? 'fan' : 'ai');
-    const span = document.createElement('span');
-    span.className = 'flip';
-    span.textContent = text;
-    div.appendChild(span);
-    chatWindow.appendChild(div);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    return div;
-  }
-
-  function showTyping(){
-    const div = document.createElement('div');
-    div.className = 'bubble ai typing-bubble';
-    div.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
-    chatWindow.appendChild(div);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    return div;
-  }
-
-  function renderSeed(lang){
-    chatWindow.innerHTML = '';
-    seedConversations[lang].forEach(msg=>appendBubble(msg.role, msg.text));
-  }
-  renderSeed('en');
-
-  function sendUserMessage(text){
-    text = text.trim();
-    if(!text) return;
-    appendBubble('fan', text);
-    chatInput.value = '';
-    const typingEl = showTyping();
-    const delay = 700 + Math.random()*500;
-    setTimeout(()=>{
-      typingEl.remove();
-      appendBubble('ai', matchReply(currentLang, text));
-    }, delay);
-  }
-
-  sendBtn.addEventListener('click', ()=>sendUserMessage(chatInput.value));
-  chatInput.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); sendUserMessage(chatInput.value); }
-  });
-
-  document.querySelectorAll('.lang-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      document.querySelectorAll('.lang-chip').forEach(c=>{c.classList.remove('active'); c.setAttribute('aria-pressed','false');});
-      chip.classList.add('active'); chip.setAttribute('aria-pressed','true');
-      currentLang = chip.dataset.lang;
-      renderSeed(currentLang);
-    });
-  });
-
-  a11yToggle.addEventListener('change', ()=>{
-    document.body.classList.toggle('a11y-mode', a11yToggle.checked);
-  });
-
-  const extraSuggest = {
-    route: {fan:"What's the fastest way to the nearest accessible entrance?", ai:"Gate D is 7 minutes faster than Gate A right now and has step-free access. Routing you there."},
-    transit: {fan:'Best way back to the city after the match?', ai:"Shuttle Route 2 is delayed — I'd suggest the 8:10 PM PATH train from Secaucus instead, about 6 minutes faster tonight."},
-    waste: {fan:'Where does this cup go?', ai:'That\'s recyclable — blue bin, nearest one is 15 feet to your left.'}
-  };
-  document.querySelectorAll('.suggest[data-q]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const q = extraSuggest[btn.dataset.q];
-      appendBubble('fan', q.fan);
-      const typingEl = showTyping();
-      setTimeout(()=>{ typingEl.remove(); appendBubble('ai', q.ai); }, 650);
-    });
-  });
-
-  /* ================= VOLUNTEER COPILOT ================= */
-  const newReportBtn = document.getElementById('newReportBtn');
-  const reportFormWrap = document.getElementById('reportFormWrap');
-  const reportInput = document.getElementById('reportInput');
-  const classifyBtn = document.getElementById('classifyBtn');
-  const classifyResult = document.getElementById('classifyResult');
-  const volLog = document.getElementById('volLog');
-  const openTasksVal = document.getElementById('openTasksVal');
-  let openTasks = 2;
-
-  newReportBtn.addEventListener('click', ()=>{
-    const showing = reportFormWrap.style.display !== 'none';
-    reportFormWrap.style.display = showing ? 'none' : 'block';
-    if(!showing) reportInput.focus();
-  });
-
-  const classifyRules = [
-    {re:/not (breathing|responding)|unconscious|collapsed|chest pain|seizure|bleeding heavily/i, category:'Medical', severity:'high', team:'Medical Station 4', eta:'90 sec', script:'Please stay calm and give them space — medical is on the way.'},
-    {re:/fight|altercation|weapon|aggressive|threat/i, category:'Security', severity:'high', team:'Security Response Unit', eta:'2 min', script:'Please move away from the area and let security handle it — no need to intervene.'},
-    {re:/lost child|missing (kid|child)|separated from/i, category:'Security · Child Safety', severity:'high', team:'Guest Services + Security', eta:'90 sec', script:'Stay with the child, do not let them wander — a staff member is coming to help reunite them.'},
-    {re:/wheelchair|accessib|mobility/i, category:'Accessibility', severity:'med', team:'Accessibility Services', eta:'3 min', script:'Someone from accessibility services is on the way to assist.'},
-    {re:/spill|slip|wet floor|trash|overflow(ing)? bin|smoke|leak/i, category:'Facilities', severity:'low', team:'Facilities Crew C-3', eta:'4 min', script:"Careful of the hazard nearby — a crew is on the way to clean it up."},
-    {re:/line|queue|crowd|blocked|congestion/i, category:'Crowd Flow', severity:'med', team:'Crowd Management', eta:'5 min', script:'Directing additional staff to help manage flow in that area.'}
-  ];
-
-  function classifyReport(text){
-    for(const rule of classifyRules){
-      if(rule.re.test(text)) return rule;
-    }
-    return {category:'General', severity:'med', team:'Guest Services', eta:'5 min', script:'Thanks for flagging this — a team member will check on it shortly.'};
-  }
-
-  classifyBtn.addEventListener('click', ()=>{
-    const text = reportInput.value.trim();
-    if(!text) { reportInput.focus(); return; }
-    classifyBtn.disabled = true;
-    classifyBtn.textContent = 'Classifying…';
-    classifyResult.innerHTML = '';
-    setTimeout(()=>{
-      const result = classifyReport(text);
-      const sevClass = result.severity === 'high' ? 'high' : (result.severity === 'med' ? 'med' : '');
-      const card = document.createElement('div');
-      card.className = 'result-card ' + sevClass;
-      card.innerHTML = `
-        <div class="tagrow">
-          <span class="tag">${result.category}</span>
-          <span class="tag">${result.severity.toUpperCase()} SEVERITY</span>
-          <span class="tag">ROUTED · ${result.team}</span>
-          <span class="tag">ETA ${result.eta}</span>
+                <!-- City 3 -->
+                <article class="city-panel">
+                    <div class="city-visual">
+                        <img src="https://images.pexels.com/photos/28827841/pexels-photo-28827841.jpeg" alt="Mexico City Estadio Azteca">
+                    </div>
+                    <div class="city-info">
+                        <h3 class="city-headline">Mexico City</h3>
+                        <div class="city-data-row">
+                            <span>Primary Stadium</span>
+                            <span>Estadio Azteca</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Capacity</span>
+                            <span>87,523</span>
+                        </div>
+                        <div class="city-data-row">
+                            <span>Matches Hosted</span>
+                            <span>5</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
         </div>
-        Suggested line for nearby fans: <i>"${result.script}"</i>
-      `;
-      classifyResult.appendChild(card);
+    </section>
 
-      // log to incident feed above
-      const fanBubble = document.createElement('div'); fanBubble.className = 'bubble fan'; fanBubble.textContent = text;
-      const aiBubble = document.createElement('div'); aiBubble.className = 'bubble ai';
-      aiBubble.innerHTML = `Classified: <b>${result.category} · ${result.severity} severity</b>. ${result.team} dispatched, ETA ${result.eta}.<br><i>"${result.script}"</i><small>Auto-routed by MATCHDAY AI</small>`;
-      volLog.appendChild(fanBubble); volLog.appendChild(aiBubble);
-      volLog.scrollTop = volLog.scrollHeight;
+    <!-- Ticket Info -->
+    <section id="tickets" data-reveal>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ticket Access</h2>
+                <p class="mono coral" style="font-size: 14px;">PHASE 1 APPLICATIONS OPEN</p>
+            </div>
 
-      openTasks += 1;
-      openTasksVal.textContent = openTasks;
+            <div class="ticket-comparison">
+                <!-- Category 3 -->
+                <div class="ticket-box">
+                    <span class="tier-label">Category 3</span>
+                    <div class="price-tag"><small>$</small>250</div>
+                    <ul class="perk-list">
+                        <li>Upper tier stadium views</li>
+                        <li>Digital souvenir match token</li>
+                        <li>Access to all public fan zones</li>
+                        <li>Public transit pass included</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
+                </div>
 
-      classifyBtn.disabled = false;
-      classifyBtn.textContent = 'Classify & route';
-      reportInput.value = '';
-    }, 850);
-  });
+                <!-- Category 2 -->
+                <div class="ticket-box featured">
+                    <span class="tier-label">Category 2</span>
+                    <div class="price-tag"><small>$</small>450</div>
+                    <ul class="perk-list">
+                        <li>Mid-tier sideline views</li>
+                        <li>Physical commemorative program</li>
+                        <li>Priority stadium entry lanes</li>
+                        <li>$50 food & beverage credit</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
+                </div>
 
-  /* ================= OPS: LIVE CROWD BARS ================= */
-  const gates = [
-    {name:'GATE A', pct:52},
-    {name:'GATE B', pct:38},
-    {name:'GATE C', pct:88},
-    {name:'GATE D', pct:61},
-    {name:'GATE E', pct:29}
-  ];
-  const gateBarsEl = document.getElementById('gateBars');
-  function barColor(pct){
-    if(pct >= 80) return 'var(--coral)';
-    if(pct >= 60) return 'var(--amber)';
-    return 'var(--pitch-bright)';
-  }
-  function renderGateBars(){
-    gateBarsEl.innerHTML = gates.map(g=>`
-      <div class="gate-row">
-        <div class="gate-name">${g.name}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${g.pct}%;background:${barColor(g.pct)};"></div></div>
-        <div class="bar-pct">${g.pct}%</div>
-      </div>`).join('');
-  }
-  renderGateBars();
-  setInterval(()=>{
-    gates.forEach(g=>{
-      const drift = Math.round((Math.random()-0.5) * 10);
-      g.pct = Math.min(97, Math.max(8, g.pct + drift));
-    });
-    renderGateBars();
-  }, 2800);
+                <!-- Category 1 -->
+                <div class="ticket-box">
+                    <span class="tier-label">Category 1</span>
+                    <div class="price-tag"><small>$</small>850</div>
+                    <ul class="perk-list">
+                        <li>Lower tier premium seating</li>
+                        <li>In-seat food & drink delivery</li>
+                        <li>Exclusive lounge access</li>
+                        <li>VIP transport shuttle service</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  /* ================= SUSTAINABILITY HUB ================= */
-  const binInput = document.getElementById('binInput');
-  const binBtn = document.getElementById('binBtn');
-  const binResult = document.getElementById('binResult');
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-legal">
+                <p>© 2026 UNITED WORLD CUP ORGANIZATION. ALL RIGHTS RESERVED.</p>
+                <p style="margin-top: 12px; color: var(--text-dim);">BROADCAST FEED ID: 2026-NA-LIVE-PROD. SYSTEM DESIGN BY UNITED 2026. NOT AN OFFICIAL FIFA PRODUCT. PROTOTYPE CONCEPT ONLY.</p>
+            </div>
+            <div class="footer-brand">
+                United 2026
+            </div>
+            <div class="nav-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Support</a>
+            </div>
+        </div>
+    </footer>
 
-  const binRules = [
-    {re:/banana|apple core|food scrap|leftover|orange peel|corn cob/i, bin:'compost', label:'Compost', note:'Food waste breaks down — goes in the green compost bin.'},
-    {re:/cup|bottle|can|plastic|aluminum|glass|cardboard/i, bin:'recycle', label:'Recycle', note:'Rinse if possible — goes in the blue recycling bin.'},
-    {re:/chip bag|wrapper|straw|napkin|foil|styrofoam/i, bin:'landfill', label:'Landfill', note:"This isn't recyclable in this venue's stream — goes in the gray landfill bin."}
-  ];
+    <script>
+        // Real-time Countdown Logic
+        const targetKickoff = new Date('June 11, 2026 18:00:00').getTime();
 
-  binBtn.addEventListener('click', ()=>{
-    const text = binInput.value.trim();
-    if(!text){ binInput.focus(); return; }
-    binBtn.disabled = true;
-    binBtn.textContent = 'Identifying…';
-    setTimeout(()=>{
-      let match = binRules.find(r=>r.re.test(text));
-      if(!match) match = {bin:'landfill', label:'Landfill', note:"Not sure this one has a dedicated stream here — default to the gray landfill bin, or ask a nearby volunteer."};
-      binResult.innerHTML = `
-        <div class="bin-result">
-          <div class="bin-swatch ${match.bin}"></div>
-          <div><b>${match.label}</b><br><span style="font-size:12.5px;color:var(--text-dim);">${match.note}</span></div>
-        </div>`;
-      binBtn.disabled = false;
-      binBtn.textContent = 'Identify bin';
-    }, 600);
-  });
+        function updateTimer() {
+            const now = new Date().getTime();
+            const difference = targetKickoff - now;
 
-  const modeSelect = document.getElementById('modeSelect');
-  const carbonResult = document.getElementById('carbonResult');
-  const carbonEstimates = {
-    'transit': {kg:2.1, note:'about 74% less than driving alone'},
-    'rideshare-shared': {kg:4.8, note:'about 40% less than driving alone'},
-    'rideshare-solo': {kg:7.4, note:'similar to driving alone'},
-    'drive': {kg:8.1, note:'the highest-footprint option for this trip'},
-    'bike': {kg:0.1, note:'the lowest-footprint option available'}
-  };
-  modeSelect.addEventListener('change', ()=>{
-    const est = carbonEstimates[modeSelect.value];
-    carbonResult.innerHTML = `Estimated round trip: <b style="color:var(--pitch-bright);">${est.kg} kg CO₂e</b> — ${est.note}.`;
-  });
-</script>
+            if (difference < 0) {
+                document.querySelector('.countdown-container').innerHTML = "<span class='mono pitch'>KICKOFF BEGUN</span>";
+                return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Reveal Animation on Scroll
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Stop observing once visible
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+        // Navigation Active State
+        window.addEventListener('scroll', () => {
+            let current = "";
+            const sections = document.querySelectorAll('section');
+            const pageYOffset = window.pageYOffset || document.documentElement.scrollTop;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 120) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href').includes(current)) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
