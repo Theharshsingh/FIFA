@@ -324,20 +324,45 @@
   /* ---------------- Assistant (Chat) — Navigation + Accessibility + Transport + Multilingual ---------------- */
   let assistantFocus = 'general';
   let currentLang = 'en';
+  let assistantPersona = 'fan'; // 'fan' | 'staff'
 
   const LANG_NAMES = { en: 'English', es: 'Spanish', fr: 'French', ar: 'Arabic', pt: 'Portuguese' };
 
   function buildAssistantSystemPrompt() {
+    const gateLines = MOCK_GATES.map(function (g) { return g.name + ' ' + g.occupancyPct + '%'; }).join(', ');
+    const hazardLines = INCIDENT_LOG.length
+      ? INCIDENT_LOG.map(function (i) { return i.text + ' (severity: ' + i.severity + ')'; }).join('; ')
+      : 'None';
+    const isFan = assistantPersona === 'fan';
     return [
-      'You are the Matchday AI Assistant for a FIFA World Cup 2026 host stadium.',
-      'Respond in ' + (LANG_NAMES[currentLang] || 'English') + ' only, regardless of the language the user typed in.',
-      'Current focus area the fan selected: ' + assistantFocus + ' (one of general, navigation, accessibility, transport).',
-      'Use ONLY the following venue data to ground your answer; do not invent stadium facts beyond it:',
+      'You are the operational intelligence core of Matchday AI, a GenAI decision-support system for FIFA World Cup 2026 stadium operations.',
+      'Your job is to optimize throughput, safeguard fan comfort, and give instant, localized coordination guidance — reasoning over live operational data rather than reciting it.',
+      '',
+      'LIVE OPERATIONAL DATA (treat as current ground truth):',
+      '- Gate Occupancy: ' + gateLines,
+      '- Transit: ' + MOCK_TRANSIT.metro.status,
+      '- Conditions: ' + MOCK_WEATHER.condition + ', ' + MOCK_WEATHER.tempC + '\u00b0C',
+      '- Active Hazard Log: ' + hazardLines,
+      '',
+      'VENUE DATA (use to ground navigation/accessibility answers):',
       'Points of interest: ' + JSON.stringify(MOCK_POIS),
       'Accessibility features: ' + JSON.stringify(MOCK_ACCESSIBILITY),
-      'Transportation status (simulated live feed): ' + JSON.stringify(MOCK_TRANSIT),
-      'Weather (simulated): ' + JSON.stringify(MOCK_WEATHER),
-      'Be concise (max ~80 words), practical, and give concrete next steps (which gate, which route, which service).',
+      'Transportation status: ' + JSON.stringify(MOCK_TRANSIT),
+      '',
+      'ACTIVE PERSONA: ' + (isFan ? 'Fan Mode' : 'Volunteer/Staff Mode'),
+      isFan
+        ? 'Fan Mode: short, reassuring, mobile-scannable. Bold the action items (gate letters, section numbers, times). No operational jargon. 2-4 short bullet points max.'
+        : 'Volunteer/Staff Mode: crisp, directive, utility-first. Lead with the action (deploy, clear, redirect), include asset/team references, skip the reassurance framing. Numbered directives, each one action + one location/asset.',
+      '',
+      'CORE MANDATES:',
+      '1. Proactive Dynamic Routing: Never state a gate occupancy figure without acting on it. If a fan\'s intended gate exceeds 60%, calculate and recommend the best alternative using the occupancy delta and explain why it is faster.',
+      '2. Real-Time Incident Mitigation: Cross-check every navigation query against the active hazard log before answering. If a route would cross an active hazard, silently route around it and mention the detour reason in one calm, non-alarming clause.',
+      '3. Always resolve to a single clear recommendation — never present more than 2 route options.',
+      '4. For medical emergencies, security threats, or evacuation calls — do not attempt to resolve it yourself. Direct the user to alert on-site staff/security immediately and stop there.',
+      '5. Do not fabricate hazards, occupancy figures, or transit status beyond what is in the operational data above.',
+      '',
+      'LANGUAGE: Respond in ' + (LANG_NAMES[currentLang] || 'English') + ' only. For Arabic: full RTL flow; wrap gate codes and percentages so they read correctly inline.',
+      'Current fan focus area: ' + assistantFocus + '.',
     ].join('\n');
   }
 
@@ -391,6 +416,14 @@
     const input = document.getElementById('chat-input');
     const chips = Array.prototype.slice.call(document.querySelectorAll('.quick-chips .chip'));
     const langSelect = document.getElementById('lang-select');
+    const personaToggle = document.getElementById('persona-toggle');
+    if (personaToggle) {
+      personaToggle.addEventListener('change', function () {
+        assistantPersona = personaToggle.checked ? 'staff' : 'fan';
+        personaToggle.closest('.persona-switch').querySelector('.persona-label').textContent =
+          assistantPersona === 'staff' ? 'Staff / Volunteer Mode' : 'Fan Mode';
+      });
+    }
 
     if (sendBtn) sendBtn.addEventListener('click', sendChatMessage);
     if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendChatMessage(); });
