@@ -588,6 +588,149 @@ main {
   .pulse        { animation: none; }
 }
 
+/* --- Header stat (compact countdown, replaces giant hero) --- */
+.header-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+.header-stat .stat-value { font-family: monospace; font-weight: 800; color: var(--accent); font-size: 1rem; }
+.header-stat .stat-label { font-size: .65rem; color: var(--text-dim); letter-spacing: .06em; text-transform: uppercase; }
+
+/* --- Settings button + modal (BYOK) -------------------------- */
+.icon-btn {
+  background: var(--navy-3);
+  border: 1px solid var(--navy-3);
+  color: var(--text-sub);
+  border-radius: var(--r-sm);
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+.icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.key-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red);
+  display: inline-block;
+  margin-left: 2px;
+}
+.key-status-dot.set { background: var(--green); }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,8,15,.7);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 200;
+  padding: var(--sp-4);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--navy-2);
+  border: 1px solid var(--navy-3);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  width: 100%;
+  max-width: 440px;
+}
+.modal h2 { font-size: 1.05rem; font-weight: 800; margin-bottom: var(--sp-2); }
+.modal p.hint { color: var(--text-sub); font-size: .8rem; margin-bottom: var(--sp-4); line-height: 1.5; }
+.modal-field { display: flex; flex-direction: column; gap: var(--sp-1); margin-bottom: var(--sp-3); }
+.modal-field label { font-size: .75rem; color: var(--text-sub); font-weight: 600; }
+.modal-field input {
+  background: var(--navy-3);
+  border: 1px solid var(--navy-3);
+  border-radius: var(--r-sm);
+  color: var(--text-main);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: .875rem;
+  font-family: inherit;
+}
+.modal-field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.modal-actions { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+.modal-actions .btn-send { flex: 1; }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--navy-3);
+  color: var(--text-sub);
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-4);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: .875rem;
+}
+.btn-secondary:hover { color: var(--text-main); border-color: var(--text-sub); }
+
+/* --- GenAI labeling badges (Step 2/4 traceability) ----------- */
+.genai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px var(--sp-2);
+  border-radius: 999px;
+  margin-bottom: var(--sp-3);
+}
+.genai-badge--real {
+  background: color-mix(in srgb, var(--green) 16%, transparent);
+  color: var(--green);
+  border: 1px solid color-mix(in srgb, var(--green) 40%, transparent);
+}
+.genai-badge--sim {
+  background: color-mix(in srgb, var(--text-sub) 16%, transparent);
+  color: var(--text-sub);
+  border: 1px solid var(--navy-3);
+}
+.genai-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* --- Quick chip active state --------------------------------- */
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--navy-3)); }
+
+/* --- Static reference (non-AI) banner ------------------------ */
+.static-banner {
+  background: var(--navy-2);
+  border: 1px dashed var(--navy-3);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: .8rem;
+  color: var(--text-sub);
+  margin-bottom: var(--sp-5);
+}
+.static-banner strong { color: var(--text-main); }
+
+/* --- Empty / loading states ----------------------------------- */
+.ai-loading { color: var(--text-dim); font-size: .8rem; font-style: italic; }
+.ai-error {
+  color: var(--red);
+  font-size: .8rem;
+  background: color-mix(in srgb, var(--red) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-3);
+}
+.ai-error a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+/* --- Fan info (secondary, de-emphasized) ---------------------- */
+.fan-match-row, .fan-city-panel, .fan-ticket-box {
+  background: var(--navy-2);
+  border: 1px solid var(--navy-3);
+  border-radius: var(--r-md);
+}
+.fan-match-row { padding: var(--sp-4); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); margin-bottom: var(--sp-3); }
+.fan-match-teams { font-weight: 700; }
+.fan-match-meta { color: var(--text-sub); font-size: .8rem; font-family: monospace; text-align: right; }
+.fan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-4); }
+.fan-city-panel, .fan-ticket-box { padding: var(--sp-4); }
+.fan-city-panel h4, .fan-ticket-box h4 { font-size: 1rem; margin-bottom: var(--sp-2); }
+.fan-city-panel .row, .fan-ticket-box .row { display: flex; justify-content: space-between; font-size: .8rem; color: var(--text-sub); padding: var(--sp-1) 0; }
+
 /* --- RTL (Arabic) ------------------------------------------- */
 [dir="rtl"] {
   text-align: right;

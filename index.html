@@ -3,1160 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNITED 2026 — FIFA World Cup</title>
-    <!-- Typography -->
+    <title>Matchday AI — FIFA World Cup 2026 Stadium Operations</title>
+    <meta name="description" content="GenAI-enabled stadium operations hub for FIFA World Cup 2026: navigation, crowd management, accessibility, transportation, sustainability, multilingual assistance, operational intelligence and real-time decision support.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #0B1E2D;       /* primary background */
-            --navy-2: #12293D;     /* card/panel background */
-            --pitch: #1F8A52;      /* primary brand accent */
-            --pitch-bright: #2FB86B; /* hover/active state */
-            --amber: #F5A623;      /* secondary accent, highlights, CTAs */
-            --coral: #E8543E;      /* alerts, live indicators, urgency */
-            --chalk: #F4F6F2;      /* primary text on dark */
-            --steel: #2A3E4E;       /* borders, secondary surfaces */
-            --steel-line: rgba(244,246,242,0.12); /* hairline dividers */
-            --text-dim: rgba(244,246,242,0.6);    /* secondary text */
-            
-            --font-display: 'Big Shoulders Display', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --font-mono: 'IBM Plex Mono', monospace;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background-color: var(--navy);
-            color: var(--chalk);
-            font-family: var(--font-body);
-            line-height: 1.5;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Utility */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        .mono { font-family: var(--font-mono); }
-        .amber { color: var(--amber); }
-        .pitch { color: var(--pitch-bright); }
-        .coral { color: var(--coral); }
-
-        /* Ticker Strip - Broadcast Style */
-        .ticker-strip {
-            background: var(--navy-2);
-            border-bottom: 1px solid var(--steel-line);
-            padding: 10px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-            z-index: 100;
-        }
-
-        .ticker-content {
-            display: inline-flex;
-            animation: scroll-ticker 40s linear infinite;
-        }
-
-        @keyframes scroll-ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .ticker-content { animation: none; white-space: normal; display: flex; flex-wrap: wrap; }
-        }
-
-        .match-ticker-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 32px;
-            border-right: 1px solid var(--steel-line);
-            font-family: var(--font-mono);
-            font-size: 13px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .live-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--coral);
-            font-weight: 600;
-        }
-
-        .live-dot {
-            width: 7px;
-            height: 7px;
-            background: var(--coral);
-            border-radius: 50%;
-            animation: pulse 1.2s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* Header & Navigation */
-        header {
-            padding: 24px 0;
-            border-bottom: 2px solid var(--steel-line);
-            position: sticky;
-            top: 0;
-            background: var(--navy);
-            z-index: 99;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-        }
-
-        .brand h1 {
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 38px;
-            letter-spacing: -0.01em;
-            text-transform: uppercase;
-            line-height: 1;
-        }
-
-        .brand span {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--amber);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-        }
-
-        .nav-links a {
-            color: var(--text-dim);
-            text-decoration: none;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 19px;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--chalk);
-        }
-
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -32px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--pitch-bright);
-        }
-
-        /* Hero Section - Night Matchday Aesthetic */
-        #hero {
-            padding: 120px 0;
-            position: relative;
-            background: linear-gradient(180deg, rgba(11, 30, 45, 0.4) 0%, var(--navy) 100%),
-                        url('https://images.unsplash.com/photo-1697562160779-fed83c21a2cd?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
-            background-size: cover;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .hero-eyebrow {
-            font-family: var(--font-mono);
-            color: var(--amber);
-            font-size: 15px;
-            letter-spacing: 0.3em;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            display: block;
-        }
-
-        .hero-title {
-            font-family: var(--font-display);
-            font-size: clamp(64px, 10vw, 140px);
-            line-height: 0.85;
-            margin-bottom: 50px;
-            text-transform: uppercase;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
-
-        .countdown-container {
-            display: flex;
-            justify-content: center;
-            gap: 48px;
-            margin-bottom: 64px;
-            background: rgba(18, 41, 61, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 32px;
-            border-radius: 12px;
-            border: 1px solid var(--steel-line);
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .countdown-unit {
-            text-align: center;
-        }
-
-        .countdown-unit span {
-            display: block;
-            font-family: var(--font-mono);
-            font-size: clamp(32px, 6vw, 72px);
-            color: var(--amber);
-            font-weight: 600;
-            line-height: 1;
-        }
-
-        .countdown-unit label {
-            font-family: var(--font-display);
-            color: var(--text-dim);
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 0.15em;
-            margin-top: 8px;
-            display: block;
-        }
-
-        .cta-btn {
-            background: var(--pitch);
-            color: var(--chalk);
-            padding: 20px 48px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 22px;
-            text-transform: uppercase;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-block;
-            border: none;
-            cursor: pointer;
-        }
-
-        .cta-btn:hover {
-            background: var(--pitch-bright);
-            transform: translateY(-2px);
-        }
-
-        .cta-btn:focus-visible {
-            outline: 3px solid var(--amber);
-            outline-offset: 4px;
-        }
-
-        /* Generic Section Styling */
-        section {
-            padding: 100px 0;
-            border-bottom: 1px solid var(--steel-line);
-        }
-
-        .section-header {
-            margin-bottom: 56px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: 56px;
-            text-transform: uppercase;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        /* Match Schedule - Broadcast Panel Aesthetic */
-        .match-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .match-row {
-            background: var(--navy-2);
-            border: 1px solid var(--steel-line);
-            border-radius: 10px;
-            padding: 24px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-
-        .match-row:hover {
-            border-color: var(--steel);
-            background: #173044;
-        }
-
-        .team-block {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex: 1;
-        }
-
-        .team-block.away {
-            justify-content: flex-end;
-        }
-
-        .flag-icon {
-            width: 48px;
-            height: 32px;
-            object-fit: cover;
-            border: 1px solid var(--steel-line);
-        }
-
-        .team-label {
-            font-family: var(--font-display);
-            font-size: 28px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .match-center {
-            padding: 0 60px;
-            text-align: center;
-            border-left: 1px solid var(--steel-line);
-            border-right: 1px solid var(--steel-line);
-        }
-
-        .match-time-data {
-            font-family: var(--font-mono);
-            font-size: 24px;
-            color: var(--amber);
-            font-weight: 600;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .match-venue-data {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-family: var(--font-mono);
-        }
-
-        /* Host City Guide - Card Panels */
-        .city-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 32px;
-        }
-
-        .city-panel {
-            background: var(--navy-2);
-            border: 1px solid var(--steel-line);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .city-visual {
-            height: 220px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .city-visual img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .city-panel:hover .city-visual img {
-            transform: scale(1.05);
-        }
-
-        .city-info {
-            padding: 24px;
-        }
-
-        .city-headline {
-            font-family: var(--font-display);
-            font-size: 32px;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-
-        .city-data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-top: 1px solid var(--steel-line);
-        }
-
-        .city-data-row span:first-child {
-            font-size: 12px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-        }
-
-        .city-data-row span:last-child {
-            font-family: var(--font-mono);
-            font-size: 14px;
-            color: var(--pitch-bright);
-        }
-
-        /* Ticket Info - Scoreboard Styling */
-        .ticket-comparison {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        .ticket-box {
-            background: var(--navy-2);
-            border: 1px solid var(--steel-line);
-            border-radius: 12px;
-            padding: 48px 32px;
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .ticket-box.featured {
-            border: 2px solid var(--amber);
-            transform: scale(1.02);
-            z-index: 2;
-        }
-
-        .tier-label {
-            font-family: var(--font-display);
-            font-size: 20px;
-            color: var(--amber);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
-            font-weight: 700;
-        }
-
-        .price-tag {
-            font-family: var(--font-mono);
-            font-size: 56px;
-            font-weight: 600;
-            margin-bottom: 32px;
-            line-height: 1;
-        }
-
-        .price-tag small {
-            font-size: 18px;
-            color: var(--text-dim);
-        }
-
-        .perk-list {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 40px;
-            flex-grow: 1;
-        }
-
-        .perk-list li {
-            font-size: 14px;
-            color: var(--text-dim);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--steel-line);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .perk-list li::before {
-            content: '>';
-            color: var(--pitch-bright);
-            font-family: var(--font-mono);
-        }
-
-        /* Footer */
-        footer {
-            padding: 80px 0;
-            border-top: 2px solid var(--steel-line);
-            background: #081622;
-        }
-
-        .footer-grid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-
-        .footer-legal {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            max-width: 400px;
-            text-align: left;
-        }
-
-        .footer-brand {
-            font-family: var(--font-display);
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        /* Responsive Fixes */
-        @media (max-width: 1024px) {
-            .match-row {
-                flex-direction: column;
-                gap: 24px;
-            }
-            .match-center {
-                border: none;
-                padding: 16px 0;
-                border-top: 1px solid var(--steel-line);
-                border-bottom: 1px solid var(--steel-line);
-                width: 100%;
-            }
-            .team-block.away { justify-content: flex-start; }
-            .countdown-container { gap: 24px; padding: 24px; }
-        }
-
-        @media (max-width: 640px) {
-            .hero-title { font-size: 56px; }
-            .nav-links { display: none; }
-            .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .countdown-container { grid-template-columns: repeat(2, 1fr); display: grid; }
-        }
-
-        /* Chatbot Widget */
-        #chat-toggle {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            width: 60px;
-            height: 60px;
-            background: var(--pitch);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-            transition: background 0.2s ease, transform 0.2s ease;
-        }
-        #chat-toggle:hover { background: var(--pitch-bright); transform: scale(1.08); }
-        #chat-toggle svg { width: 28px; height: 28px; fill: var(--chalk); }
-        #chat-panel {
-            position: fixed;
-            bottom: 104px;
-            right: 32px;
-            width: 380px;
-            background: var(--navy-2);
-            border: 1px solid var(--steel-line);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-            overflow: hidden;
-            transform: scale(0.95) translateY(10px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        #chat-panel.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
-        .chat-header {
-            padding: 16px 20px;
-            background: var(--navy);
-            border-bottom: 1px solid var(--steel-line);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .chat-header-dot { width: 8px; height: 8px; background: var(--pitch-bright); border-radius: 50%; animation: pulse 1.2s infinite ease-in-out; }
-        .chat-header-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; text-transform: uppercase; flex: 1; }
-        .chat-header-sub { font-family: var(--font-mono); font-size: 10px; color: var(--amber); letter-spacing: 0.15em; }
-        #chat-messages {
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 300px;
-            max-height: 360px;
-        }
-        #chat-messages::-webkit-scrollbar { width: 4px; }
-        #chat-messages::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 2px; }
-        .msg { max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 14px; line-height: 1.5; }
-        .msg.bot { background: var(--navy); border: 1px solid var(--steel-line); align-self: flex-start; }
-        .msg.user { background: var(--pitch); align-self: flex-end; }
-        .msg.typing { color: var(--text-dim); font-style: italic; }
-        .chat-input-row {
-            display: flex;
-            gap: 8px;
-            padding: 12px 16px;
-            border-top: 1px solid var(--steel-line);
-            background: var(--navy);
-        }
-        #chat-input {
-            flex: 1;
-            background: var(--steel);
-            border: 1px solid var(--steel-line);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: var(--chalk);
-            font-family: var(--font-body);
-            font-size: 14px;
-            outline: none;
-        }
-        #chat-input:focus { border-color: var(--pitch-bright); }
-        #chat-input::placeholder { color: var(--text-dim); }
-        #chat-send {
-            background: var(--pitch);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            color: var(--chalk);
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        #chat-send:hover { background: var(--pitch-bright); }
-        @media (max-width: 640px) {
-            #chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; }
-            #chat-toggle { right: 16px; bottom: 16px; }
-        }
-
-        /* Motion System */
-        [data-reveal] {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        [data-reveal].visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="matchday-ai.css">
 </head>
 <body>
 
-    <!-- Broadcast Match Ticker -->
-    <div class="ticker-strip" aria-hidden="true">
-        <div class="ticker-content">
-            <div class="match-ticker-item">
-                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
-                ARG <span class="amber">2 - 1</span> BRA · <span class="mono">78'</span>
-            </div>
-            <div class="match-ticker-item">FINAL · USA <span class="amber">3 - 0</span> MEX</div>
-            <div class="match-ticker-item">
-                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
-                CAN <span class="amber">1 - 1</span> FRA · <span class="mono">34'</span>
-            </div>
-            <div class="match-ticker-item">UPCOMING · ESP VS JPN · <span class="mono">20:00</span></div>
-            <div class="match-ticker-item">UPCOMING · GER VS MAR · <span class="mono">22:00</span></div>
-            <!-- Duplicate for infinite scroll -->
-            <div class="match-ticker-item">
-                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
-                ARG <span class="amber">2 - 1</span> BRA · <span class="mono">78'</span>
-            </div>
-            <div class="match-ticker-item">FINAL · USA <span class="amber">3 - 0</span> MEX</div>
-            <div class="match-ticker-item">
-                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
-                CAN <span class="amber">1 - 1</span> FRA · <span class="mono">34'</span>
-            </div>
-            <div class="match-ticker-item">UPCOMING · ESP VS JPN · <span class="mono">20:00</span></div>
-            <div class="match-ticker-item">UPCOMING · GER VS MAR · <span class="mono">22:00</span></div>
-        </div>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- Live Ops Ticker (repurposed from decorative match scores -> crowd/ops status, see ALIGNMENT.md) -->
+    <div class="ticker-wrap" aria-hidden="true">
+        <div class="ticker-track" id="ticker-track"></div>
     </div>
 
-    <!-- Main Navigation -->
     <header>
-        <div class="container">
-            <nav>
-                <div class="brand">
-                    <h1>United 2026</h1>
-                    <span>FIFA World Cup</span>
-                </div>
-                <div class="nav-links">
-                    <a href="#hero" class="active">Home</a>
-                    <a href="#schedule">Schedule</a>
-                    <a href="#cities">Cities</a>
-                    <a href="#tickets">Tickets</a>
-                </div>
-                <a href="#tickets" class="cta-btn" style="padding: 12px 28px; font-size: 15px;">Book Tickets</a>
-            </nav>
-        </div>
+        <div class="logo">Matchday<span>AI</span></div>
+        <nav>
+            <div class="header-stat">
+                <span class="stat-value" id="header-countdown" aria-live="off">--</span>
+                <span class="stat-label">Kickoff · Jun 11, 2026</span>
+            </div>
+            <select id="lang-select" aria-label="Assistant response language">
+                <option value="en">EN — English</option>
+                <option value="es">ES — Español</option>
+                <option value="fr">FR — Français</option>
+                <option value="pt">PT — Português</option>
+                <option value="ar">AR — العربية</option>
+            </select>
+            <button id="settings-btn" class="icon-btn" aria-label="Open GenAI settings">
+                <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+            </button>
+            <span id="key-status-dot" class="key-status-dot" title="API key status"></span>
+        </nav>
     </header>
 
-    <!-- Hero Section with Countdown -->
-    <section id="hero">
-        <div class="container hero-content">
-            <span class="hero-eyebrow">The World Cup Returns to North America</span>
-            <h1 class="hero-title">United for <br> the Win</h1>
-            
-            <div class="countdown-container">
-                <div class="countdown-unit">
-                    <span id="days" class="mono">342</span>
-                    <label>Days</label>
-                </div>
-                <div class="countdown-unit">
-                    <span id="hours" class="mono">14</span>
-                    <label>Hours</label>
-                </div>
-                <div class="countdown-unit">
-                    <span id="minutes" class="mono">22</span>
-                    <label>Mins</label>
-                </div>
-                <div class="countdown-unit">
-                    <span id="seconds" class="mono">09</span>
-                    <label>Secs</label>
-                </div>
-            </div>
-
-            <a href="#schedule" class="cta-btn">View Match Schedule</a>
+    <main id="main">
+        <div class="disclaimer">
+            <span>⚠</span>
+            <span>
+                <strong>Prototype, not an official FIFA product.</strong>
+                Run <code>npm start</code> and set <code>OPENAI_API_KEY</code> in <code>.env</code> so the key stays
+                server-side, or use Direct Browser mode in Settings if opening this file without a server.
+                Structured feeds (gate occupancy, transit, weather) are simulated since no live sensor/transit API is
+                available here — every response you see is a genuine, uncached LLM completion generated over that data.
+                See <code>ALIGNMENT.md</code> for the full category mapping.
+            </span>
         </div>
-    </section>
 
-    <!-- Match Schedule Section -->
-    <section id="schedule" data-reveal>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Match Schedule</h2>
-                <p class="mono amber" style="font-size: 14px;">GROUP STAGE · WEEK 1</p>
-            </div>
-            
-            <div class="match-list">
-                <!-- Match 1 -->
-                <div class="match-row">
-                    <div class="team-block">
-                        <img src="https://flagcdn.com/w80/us.png" alt="USA Flag" class="flag-icon">
-                        <span class="team-label">USA</span>
-                    </div>
-                    <div class="match-center">
-                        <span class="match-time-data">18:00</span>
-                        <span class="match-venue-data">MetLife Stadium, East Rutherford</span>
-                    </div>
-                    <div class="team-block away">
-                        <span class="team-label">MEX</span>
-                        <img src="https://flagcdn.com/w80/mx.png" alt="Mexico Flag" class="flag-icon">
-                    </div>
-                </div>
-
-                <!-- Match 2 -->
-                <div class="match-row">
-                    <div class="team-block">
-                        <img src="https://flagcdn.com/w80/ca.png" alt="Canada Flag" class="flag-icon">
-                        <span class="team-label">CAN</span>
-                    </div>
-                    <div class="match-center">
-                        <span class="match-time-data">21:00</span>
-                        <span class="match-venue-data">BC Place, Vancouver</span>
-                    </div>
-                    <div class="team-block away">
-                        <span class="team-label">BRA</span>
-                        <img src="https://flagcdn.com/w80/br.png" alt="Brazil Flag" class="flag-icon">
-                    </div>
-                </div>
-
-                <!-- Match 3 -->
-                <div class="match-row">
-                    <div class="team-block">
-                        <img src="https://flagcdn.com/w80/es.png" alt="Spain Flag" class="flag-icon">
-                        <span class="team-label">ESP</span>
-                    </div>
-                    <div class="match-center">
-                        <span class="match-time-data">14:00</span>
-                        <span class="match-venue-data">Estadio Azteca, Mexico City</span>
-                    </div>
-                    <div class="team-block away">
-                        <span class="team-label">JPN</span>
-                        <img src="https://flagcdn.com/w80/jp.png" alt="Japan Flag" class="flag-icon">
-                    </div>
-                </div>
-            </div>
+        <div class="tab-nav" role="tablist">
+            <button class="tab-btn" role="tab" data-tab="assistant" aria-selected="true">💬 Assistant</button>
+            <button class="tab-btn" role="tab" data-tab="ops" aria-selected="false">📊 Crowd &amp; Ops</button>
+            <button class="tab-btn" role="tab" data-tab="volunteer" aria-selected="false">🧑‍🚒 Volunteer</button>
+            <button class="tab-btn" role="tab" data-tab="sustainability" aria-selected="false">♻️ Sustainability</button>
+            <button class="tab-btn" role="tab" data-tab="fan" aria-selected="false">🎟 Fan Info</button>
         </div>
-    </section>
 
-    <!-- Host City Guide -->
-    <section id="cities" data-reveal>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Host Cities</h2>
-                <p class="mono pitch" style="font-size: 14px;">16 CITIES · 3 NATIONS</p>
-            </div>
-            
-            <div class="city-layout">
-                <!-- City 1 -->
-                <article class="city-panel">
-                    <div class="city-visual">
-                        <img src="https://images.pexels.com/photos/16543548/pexels-photo-16543548.jpeg" alt="New York New Jersey skyline">
+        <!-- ================= ASSISTANT: Navigation + Accessibility + Transport + Multilingual ================= -->
+        <section id="tab-assistant" class="tab-panel" aria-hidden="false">
+            <span class="genai-badge genai-badge--real"><span class="genai-badge-dot"></span>Real GenAI reasoning · Simulated venue data</span>
+            <div class="chat-layout">
+                <div class="chat-window">
+                    <div class="quick-chips" role="group" aria-label="Assistant focus area">
+                        <button class="chip" data-focus="general" data-placeholder="Ask anything about the stadium…" aria-pressed="true">General</button>
+                        <button class="chip" data-focus="navigation" data-placeholder="e.g. How do I get from Gate C to Section 114?">Navigation</button>
+                        <button class="chip" data-focus="accessibility" data-placeholder="Describe your accessibility need…">Accessibility</button>
+                        <button class="chip" data-focus="transport" data-placeholder="Ask about parking, transit, rideshare…">Transport &amp; Parking</button>
                     </div>
-                    <div class="city-info">
-                        <h3 class="city-headline">NY / NJ</h3>
-                        <div class="city-data-row">
-                            <span>Primary Stadium</span>
-                            <span>MetLife Stadium</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Capacity</span>
-                            <span>82,500</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Matches Hosted</span>
-                            <span>8</span>
-                        </div>
+                    <div id="chat-messages" class="chat-messages" role="log" aria-live="polite"></div>
+                    <div class="chat-form">
+                        <input id="chat-input" type="text" placeholder="Ask anything about the stadium…" autocomplete="off">
+                        <button id="chat-send" class="btn-send">Send</button>
                     </div>
-                </article>
-
-                <!-- City 2 -->
-                <article class="city-panel">
-                    <div class="city-visual">
-                        <img src="https://images.pexels.com/photos/34227895/pexels-photo-34227895.jpeg" alt="Los Angeles SoFi Stadium">
-                    </div>
-                    <div class="city-info">
-                        <h3 class="city-headline">Los Angeles</h3>
-                        <div class="city-data-row">
-                            <span>Primary Stadium</span>
-                            <span>SoFi Stadium</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Capacity</span>
-                            <span>70,000</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Matches Hosted</span>
-                            <span>6</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- City 3 -->
-                <article class="city-panel">
-                    <div class="city-visual">
-                        <img src="https://images.pexels.com/photos/28827841/pexels-photo-28827841.jpeg" alt="Mexico City Estadio Azteca">
-                    </div>
-                    <div class="city-info">
-                        <h3 class="city-headline">Mexico City</h3>
-                        <div class="city-data-row">
-                            <span>Primary Stadium</span>
-                            <span>Estadio Azteca</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Capacity</span>
-                            <span>87,523</span>
-                        </div>
-                        <div class="city-data-row">
-                            <span>Matches Hosted</span>
-                            <span>5</span>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Ticket Info -->
-    <section id="tickets" data-reveal>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Ticket Access</h2>
-                <p class="mono coral" style="font-size: 14px;">PHASE 1 APPLICATIONS OPEN</p>
-            </div>
-
-            <div class="ticket-comparison">
-                <!-- Category 3 -->
-                <div class="ticket-box">
-                    <span class="tier-label">Category 3</span>
-                    <div class="price-tag"><small>$</small>250</div>
-                    <ul class="perk-list">
-                        <li>Upper tier stadium views</li>
-                        <li>Digital souvenir match token</li>
-                        <li>Access to all public fan zones</li>
-                        <li>Public transit pass included</li>
-                    </ul>
-                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
                 </div>
-
-                <!-- Category 2 -->
-                <div class="ticket-box featured">
-                    <span class="tier-label">Category 2</span>
-                    <div class="price-tag"><small>$</small>450</div>
-                    <ul class="perk-list">
-                        <li>Mid-tier sideline views</li>
-                        <li>Physical commemorative program</li>
-                        <li>Priority stadium entry lanes</li>
-                        <li>$50 food & beverage credit</li>
-                    </ul>
-                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
-                </div>
-
-                <!-- Category 1 -->
-                <div class="ticket-box">
-                    <span class="tier-label">Category 1</span>
-                    <div class="price-tag"><small>$</small>850</div>
-                    <ul class="perk-list">
-                        <li>Lower tier premium seating</li>
-                        <li>In-seat food & drink delivery</li>
-                        <li>Exclusive lounge access</li>
-                        <li>VIP transport shuttle service</li>
-                    </ul>
-                    <a href="#" class="cta-btn" style="width: 100%;">Apply Now</a>
+                <div>
+                    <div class="info-card">
+                        <h3>Covers</h3>
+                        <p>Navigation, accessibility guidance, transport/parking advice — generated fresh from your open-ended question against venue data, in your selected language.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Multilingual</h3>
+                        <p>Switch the language selector above — the assistant generates its next answer natively in that language (including right-to-left Arabic), not from a translation table.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container footer-grid">
-            <div class="footer-legal">
-                <p>© 2026 UNITED WORLD CUP ORGANIZATION. ALL RIGHTS RESERVED.</p>
-                <p style="margin-top: 12px; color: var(--text-dim);">BROADCAST FEED ID: 2026-NA-LIVE-PROD. SYSTEM DESIGN BY UNITED 2026. NOT AN OFFICIAL FIFA PRODUCT. PROTOTYPE CONCEPT ONLY.</p>
+        <!-- ================= OPS: Crowd management + Operational intelligence ================= -->
+        <section id="tab-ops" class="tab-panel" aria-hidden="true">
+            <span class="genai-badge genai-badge--real"><span class="genai-badge-dot"></span>Real GenAI reasoning · Simulated live feeds</span>
+            <div class="ops-layout">
+                <div class="panel">
+                    <h2>Gate Congestion Forecaster <span style="font-size:.65rem;color:var(--text-dim);font-weight:600;">— crowd management</span></h2>
+                    <div class="gate-grid" id="gate-grid"></div>
+                    <button id="gate-forecast-btn" class="btn-classify" style="margin-top:var(--sp-4);">Generate forecast &amp; recommendation</button>
+                    <div id="gate-forecast-result" class="classification-result"></div>
+                </div>
+                <div class="panel">
+                    <h2>Ops Brief Generator <span style="font-size:.65rem;color:var(--text-dim);font-weight:600;">— operational intelligence</span></h2>
+                    <p style="color:var(--text-sub);font-size:.85rem;margin-bottom:var(--sp-3);">
+                        Synthesizes gate occupancy, incident log, weather and transit feeds into one prioritized briefing for venue staff.
+                    </p>
+                    <button id="ops-brief-btn" class="btn-classify">Generate ops brief</button>
+                    <div id="ops-brief-result" class="classification-result"></div>
+                </div>
             </div>
-            <div class="footer-brand">
-                United 2026
+        </section>
+
+        <!-- ================= VOLUNTEER: Real-time decision support ================= -->
+        <section id="tab-volunteer" class="tab-panel" aria-hidden="true">
+            <span class="genai-badge genai-badge--real"><span class="genai-badge-dot"></span>Real GenAI reasoning · Real-time decision support</span>
+            <div class="vol-layout">
+                <div class="panel">
+                    <h2>Report an Incident</h2>
+                    <div class="report-form">
+                        <label for="incident-text">Describe what you see, in your own words</label>
+                        <textarea id="incident-text" rows="4" placeholder="e.g. A fan near Section 108 seems to be having trouble breathing and looks pale…"></textarea>
+                        <button id="incident-submit-btn" class="btn-classify">Classify &amp; get response guidance</button>
+                        <div id="incident-result" class="classification-result"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>Live Incident Log</h2>
+                    <div class="incident-log" id="incident-log"></div>
+                </div>
             </div>
-            <div class="nav-links">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-                <a href="#">Support</a>
+        </section>
+
+        <!-- ================= SUSTAINABILITY ================= -->
+        <section id="tab-sustainability" class="tab-panel" aria-hidden="true">
+            <span class="genai-badge genai-badge--real"><span class="genai-badge-dot"></span>Real GenAI reasoning · Simulated carbon data</span>
+            <div class="sus-layout">
+                <div class="panel">
+                    <h2>Waste Sorting Identifier</h2>
+                    <div class="bin-form">
+                        <label for="bin-item-input">Describe the item</label>
+                        <input id="bin-item-input" type="text" placeholder="e.g. half-eaten nacho tray with a plastic cheese cup">
+                        <button id="bin-submit-btn" class="btn-bin">Identify correct bin</button>
+                        <div id="bin-result" class="bin-result"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>Sustainability Snapshot <span class="genai-badge genai-badge--sim" style="margin:0 0 0 var(--sp-2);vertical-align:middle;">Fully simulated data</span></h2>
+                    <div class="carbon-stats">
+                        <div class="carbon-item"><span class="carbon-label">Waste diverted from landfill today</span><span class="carbon-value">64%</span></div>
+                        <div class="carbon-item"><span class="carbon-label">Est. CO₂e saved via transit shift</span><span class="carbon-value">3.2t</span></div>
+                        <div class="carbon-item"><span class="carbon-label">Reusable cups in circulation</span><span class="carbon-value">18,400</span></div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </footer>
+        </section>
 
-    <script>
-        // Real-time Countdown Logic
-        const targetKickoff = new Date('June 11, 2026 18:00:00').getTime();
+        <!-- ================= FAN INFO: static reference, explicitly non-AI ================= -->
+        <section id="tab-fan" class="tab-panel" aria-hidden="true">
+            <div class="static-banner"><strong>Static reference — no AI.</strong> Kept for fan convenience; not counted toward any GenAI capability.</div>
 
-        function updateTimer() {
-            const now = new Date().getTime();
-            const difference = targetKickoff - now;
-
-            if (difference < 0) {
-                document.querySelector('.countdown-container').innerHTML = "<span class='mono pitch'>KICKOFF BEGUN</span>";
-                return;
-            }
-
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-            document.getElementById('days').textContent = days;
-            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        }
-
-        setInterval(updateTimer, 1000);
-        updateTimer();
-
-        // Reveal Animation on Scroll
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    // Stop observing once visible
-                    revealObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
-
-        // Navigation Active State
-        window.addEventListener('scroll', () => {
-            let current = "";
-            const sections = document.querySelectorAll('section');
-            const pageYOffset = window.pageYOffset || document.documentElement.scrollTop;
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 120) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            document.querySelectorAll('.nav-links a').forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href').includes(current)) {
-                    a.classList.add('active');
-                }
-            });
-        });
-    </script>
-
-    <!-- Chatbot Widget -->
-    <button id="chat-toggle" aria-label="Open FIFA Assistant">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.03 2 11c0 2.7 1.22 5.12 3.17 6.83L4 22l4.62-1.54C9.7 20.8 10.83 21 12 21c5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
-    </button>
-
-    <div id="chat-panel" role="dialog" aria-label="FIFA Assistant">
-        <div class="chat-header">
-            <div class="chat-header-dot"></div>
-            <div>
-                <div class="chat-header-title">FIFA Assistant</div>
-                <div class="chat-header-sub">UNITED 2026 &middot; LIVE</div>
+            <div class="panel" style="margin-bottom:var(--sp-5);">
+                <h2>Match Schedule</h2>
+                <div class="fan-match-row">
+                    <span class="fan-match-teams">USA vs MEX</span>
+                    <span class="fan-match-meta">Jun 11 · 18:00<br>MetLife Stadium</span>
+                </div>
+                <div class="fan-match-row">
+                    <span class="fan-match-teams">CAN vs BRA</span>
+                    <span class="fan-match-meta">Jun 12 · 21:00<br>BC Place, Vancouver</span>
+                </div>
+                <div class="fan-match-row">
+                    <span class="fan-match-teams">ESP vs JPN</span>
+                    <span class="fan-match-meta">Jun 13 · 14:00<br>Estadio Azteca, Mexico City</span>
+                </div>
             </div>
-        </div>
-        <div id="chat-messages"></div>
-        <div class="chat-input-row">
-            <input id="chat-input" type="text" placeholder="Ask about matches, cities, tickets..." autocomplete="off">
-            <button id="chat-send">Send</button>
+
+            <div class="panel" style="margin-bottom:var(--sp-5);">
+                <h2>Host Cities</h2>
+                <div class="fan-grid">
+                    <div class="fan-city-panel"><h4>NY / NJ</h4>
+                        <div class="row"><span>Stadium</span><span>MetLife</span></div>
+                        <div class="row"><span>Capacity</span><span>82,500</span></div>
+                        <div class="row"><span>Matches</span><span>8</span></div>
+                    </div>
+                    <div class="fan-city-panel"><h4>Los Angeles</h4>
+                        <div class="row"><span>Stadium</span><span>SoFi</span></div>
+                        <div class="row"><span>Capacity</span><span>70,000</span></div>
+                        <div class="row"><span>Matches</span><span>6</span></div>
+                    </div>
+                    <div class="fan-city-panel"><h4>Mexico City</h4>
+                        <div class="row"><span>Stadium</span><span>Estadio Azteca</span></div>
+                        <div class="row"><span>Capacity</span><span>87,523</span></div>
+                        <div class="row"><span>Matches</span><span>5</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Ticket Tiers</h2>
+                <div class="fan-grid">
+                    <div class="fan-ticket-box"><h4>Category 3 — $250</h4>
+                        <div class="row"><span>Upper tier views, fan zone access, transit pass</span></div>
+                    </div>
+                    <div class="fan-ticket-box"><h4>Category 2 — $450</h4>
+                        <div class="row"><span>Mid-tier sideline, priority entry, $50 F&amp;B credit</span></div>
+                    </div>
+                    <div class="fan-ticket-box"><h4>Category 1 — $850</h4>
+                        <div class="row"><span>Premium seating, in-seat delivery, VIP shuttle</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= Settings Modal (BYOK) ================= -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal" role="dialog" aria-label="GenAI settings">
+            <h2>GenAI Settings</h2>
+            <p class="hint">Choose how the browser reaches the LLM. The key should stay server-side whenever possible.</p>
+
+            <div class="modal-field">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+                    <input type="radio" name="settings-mode" id="settings-mode-proxy" value="proxy" checked>
+                    Use built-in server (recommended) — key stays in the server's <code>.env</code>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+                    <input type="radio" name="settings-mode" id="settings-mode-direct" value="direct">
+                    Direct browser call (bring your own key) — needed when opening this file directly (<code>file://</code>)
+                </label>
+            </div>
+
+            <p id="settings-proxy-status" class="hint"></p>
+
+            <div id="settings-direct-fields" style="display:none;">
+                <p class="hint">Stored only in this browser's <code>localStorage</code>, sent only directly to the API endpoint below, never committed to this repository.</p>
+                <div class="modal-field">
+                    <label for="settings-baseurl">API Base URL</label>
+                    <input id="settings-baseurl" type="text" value="https://api.openai.com/v1/chat/completions">
+                </div>
+                <div class="modal-field">
+                    <label for="settings-model">Model</label>
+                    <input id="settings-model" type="text" value="gpt-4o-mini">
+                </div>
+                <div class="modal-field">
+                    <label for="settings-key">API Key</label>
+                    <input id="settings-key" type="password" placeholder="sk-…">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="settings-save" class="btn-send">Save</button>
+                <button id="settings-clear" class="btn-secondary">Clear key</button>
+                <button id="settings-close" class="btn-secondary">Close</button>
+            </div>
         </div>
     </div>
 
-    <script>
-    const KB = {
-        matches: [
-            { home: 'USA', away: 'MEX', time: '18:00', venue: 'MetLife Stadium, East Rutherford', date: 'Jun 11' },
-            { home: 'CAN', away: 'BRA', time: '21:00', venue: 'BC Place, Vancouver', date: 'Jun 12' },
-            { home: 'ESP', away: 'JPN', time: '14:00', venue: 'Estadio Azteca, Mexico City', date: 'Jun 13' },
-        ],
-        cities: [
-            { name: 'New York / New Jersey', stadium: 'MetLife Stadium', capacity: '82,500', matches: 8 },
-            { name: 'Los Angeles', stadium: 'SoFi Stadium', capacity: '70,000', matches: 6 },
-            { name: 'Mexico City', stadium: 'Estadio Azteca', capacity: '87,523', matches: 5 },
-        ],
-        tickets: [
-            { tier: 'Category 3', price: '$250', perks: 'Upper tier views, digital token, fan zone access, transit pass' },
-            { tier: 'Category 2', price: '$450', perks: 'Mid-tier sideline, commemorative program, priority entry, $50 F&B credit' },
-            { tier: 'Category 1', price: '$850', perks: 'Lower tier premium, in-seat delivery, lounge access, VIP shuttle' },
-        ],
-        kickoff: new Date('June 11, 2026 18:00:00'),
-    };
+    <footer style="padding:var(--sp-6) var(--sp-5);text-align:center;color:var(--text-dim);font-size:.75rem;">
+        © 2026 Matchday AI Prototype. Not an official FIFA product. See ALIGNMENT.md for problem-statement traceability.
+    </footer>
 
-    function getDaysLeft() {
-        const diff = KB.kickoff - Date.now();
-        return diff > 0 ? Math.floor(diff / 86400000) : 0;
-    }
-
-    function respond(raw) {
-        const q = raw.trim().toLowerCase();
-
-        if (/^(hi|hello|hey|sup|yo|hola)/.test(q))
-            return 'Hey! I am your FIFA 2026 assistant. Ask me about <b>matches</b>, <b>host cities</b>, <b>tickets</b>, or the <b>countdown</b>.';
-
-        if (/when|start|begin|kickoff|countdown|days left/.test(q))
-            return 'The tournament kicks off on <b>June 11, 2026</b> — that is <b>' + getDaysLeft() + ' days</b> from today! Opening match: USA vs MEX at MetLife Stadium.';
-
-        const teamMatch = KB.matches.find(m =>
-            q.includes(m.home.toLowerCase()) || q.includes(m.away.toLowerCase())
-        );
-        if (teamMatch)
-            return '<b>' + teamMatch.home + ' vs ' + teamMatch.away + '</b><br>' + teamMatch.date + ' · ' + teamMatch.time + '<br>📍 ' + teamMatch.venue;
-
-        if (/match|schedule|fixture|game/.test(q)) {
-            return 'Scheduled matches:<br><br>' + KB.matches.map(m => '• ' + m.home + ' vs ' + m.away + ' — ' + m.date + ' ' + m.time + ' @ ' + m.venue).join('<br>');
-        }
-
-        const cityMatch = KB.cities.find(c =>
-            q.includes(c.name.toLowerCase().split(' ')[0]) ||
-            q.includes(c.stadium.toLowerCase().split(' ')[0])
-        );
-        if (cityMatch)
-            return '<b>' + cityMatch.name + '</b><br>🏟 ' + cityMatch.stadium + ' (' + cityMatch.capacity + ')<br>Hosting <b>' + cityMatch.matches + ' matches</b>';
-
-        if (/cit|host|venue|stadium|where/.test(q))
-            return 'Key host venues:<br><br>' + KB.cities.map(c => '• ' + c.name + ' — ' + c.stadium).join('<br>');
-
-        if (/cheap|afford|budget/.test(q))
-            return 'Most affordable: <b>Category 3 at $250</b> — upper tier views, fan zone access, and a transit pass.';
-
-        if (/best|premium|vip|luxury/.test(q))
-            return 'Top tier: <b>Category 1 at $850</b> — lower tier seating, in-seat service, lounge access, and VIP shuttle.';
-
-        if (/ticket|price|cost|buy|book|apply|seat/.test(q))
-            return 'Ticket tiers:<br><br>' + KB.tickets.map(t => '• ' + t.tier + ': <b>' + t.price + '</b> — ' + t.perks).join('<br>') + '<br><br>Phase 1 applications are open!';
-
-        if (/help|what can|options/.test(q))
-            return 'I can help with:<br>• 📅 <b>Match schedule</b> — ask about any team<br>• 🏙 <b>Host cities</b> and stadiums<br>• 🎟 <b>Ticket prices</b> and tiers<br>• ⏱ <b>Countdown</b> to kickoff';
-
-        return 'Not sure about that. Try asking about a <b>team</b>, <b>city</b>, <b>ticket</b>, or type <b>help</b>.';
-    }
-
-    const panel = document.getElementById('chat-panel');
-    const toggle = document.getElementById('chat-toggle');
-    const messages = document.getElementById('chat-messages');
-    const input = document.getElementById('chat-input');
-    let opened = false;
-
-    function addMsg(text, role) {
-        const el = document.createElement('div');
-        el.className = 'msg ' + role;
-        el.innerHTML = text;
-        messages.appendChild(el);
-        messages.scrollTop = messages.scrollHeight;
-        return el;
-    }
-
-    function sendMessage() {
-        const text = input.value.trim();
-        if (!text) return;
-        addMsg(text, 'user');
-        input.value = '';
-        const typing = addMsg('Thinking...', 'bot typing');
-        setTimeout(function() {
-            typing.className = 'msg bot';
-            typing.innerHTML = respond(text);
-            messages.scrollTop = messages.scrollHeight;
-        }, 400);
-    }
-
-    toggle.addEventListener('click', function() {
-        opened = !opened;
-        panel.classList.toggle('open', opened);
-        if (opened && messages.children.length === 0)
-            addMsg('Welcome to <b>United 2026</b> ⚽<br>Ask me about matches, cities, tickets, or the countdown!', 'bot');
-        if (opened) input.focus();
-    });
-
-    document.getElementById('chat-send').addEventListener('click', sendMessage);
-    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
-    </script>
+    <script src="matchday-ai.js"></script>
 </body>
 </html>
