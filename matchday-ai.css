@@ -693,6 +693,40 @@ main {
 /* --- Quick chip active state --------------------------------- */
 .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--navy-3)); }
 
+/* --- Persona toggle (Fan / Staff mode) ----------------------- */
+.persona-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  user-select: none;
+  font-size: .75rem;
+  color: var(--text-sub);
+}
+.persona-switch input { display: none; }
+.persona-slider {
+  width: 32px; height: 18px;
+  background: var(--navy-3);
+  border-radius: 999px;
+  position: relative;
+  transition: background var(--t-fast);
+  flex-shrink: 0;
+}
+.persona-slider::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform var(--t-fast), background var(--t-fast);
+}
+.persona-switch input:checked + .persona-slider { background: color-mix(in srgb, var(--accent-2) 60%, var(--navy-3)); }
+.persona-switch input:checked + .persona-slider::after { transform: translateX(14px); background: #a78bfa; }
+.persona-label { font-weight: 600; transition: color var(--t-fast); }
+.persona-switch input:checked ~ .persona-label { color: #a78bfa; }
+
 /* --- Static reference (non-AI) banner ------------------------ */
 .static-banner {
   background: var(--navy-2);
